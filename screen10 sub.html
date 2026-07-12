@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AssetFlow - Notifications</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+    }
+
+    body {
+      background-color: #f1f5f9; 
+      color: #1e293b;
+      display: flex;
+      min-height: 100vh;
+    }
+    .sidebar {
+      width: 260px;
+      background-color: #0f172a; 
+      color: #ffffff;
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+    }
+
+    .sidebar-header {
+      padding: 24px;
+      font-size: 1.25rem;
+      font-weight: 700;
+      border-bottom: 1px solid #1e293b;
+    }
+
+    .nav-links {
+      list-style: none;
+      padding: 16px 8px;
+    }
+
+    .nav-links li {
+      margin-bottom: 4px;
+    }
+
+    .nav-links a {
+      display: block;
+      padding: 12px 16px;
+      color: #94a3b8;
+      text-decoration: none;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      font-weight: 500;
+    }
+
+    .nav-links a:hover {
+      background-color: #1e293b;
+      color: #ffffff;
+    }
+
+    .nav-links a.active {
+      background-color: #38bdf8; 
+      color: #0f172a;
+      font-weight: 600;
+    }
+    .main-content {
+      flex-grow: 1;
+      padding: 40px;
+      overflow-y: auto;
+    }
+
+    .section-title {
+      font-size: 1.5rem;
+      color: #0f172a;
+      font-weight: 600;
+      margin-bottom: 24px;
+    }
+    .filter-group {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    .filter-btn {
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      background-color: transparent;
+      border: 1px solid #cbd5e1;
+      color: #64748b;
+      transition: all 0.2s ease;
+    }
+
+    .filter-btn:hover {
+      background-color: #e2e8f0;
+      color: #1e293b;
+    }
+
+    .filter-btn.active {
+      background-color: #0f172a;
+      color: #ffffff;
+      border-color: #0f172a;
+    }
+    .notifications-card {
+      background-color: #ffffff;
+      border: 1px solid #cbd5e1;
+      border-radius: 12px;
+      padding: 0 24px; 
+      box-shadow: 0 2px 4px rgba(15, 23, 42, 0.05);
+    }
+
+    .notif-list {
+      list-style: none;
+    }
+    .notif-item {
+      display: flex;
+      justify-content: space-between; 
+      align-items: center;
+      padding: 20px 0;
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    .notif-item:last-child {
+      border-bottom: none;
+    }
+
+    .notif-content {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      font-size: 0.95rem;
+      color: #1e293b;
+    }
+
+    .highlight-text {
+      font-weight: 600;
+    }
+
+    .notif-time {
+      font-size: 0.85rem;
+      color: #94a3b8;
+      white-space: nowrap; 
+    }
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .dot-info { background-color: #38bdf8; }    
+    .dot-success { background-color: #10b981; } 
+    .dot-alert { background-color: #ef4444; }   
+
+  </style>
+</head>
+<body>
+
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      AssetFlow
+    </div>
+    <ul class="nav-links">
+      <li><a href="#">Dashboard</a></li>
+      <li><a href="#">Organization setup</a></li>
+      <li><a href="#">Assets</a></li>
+      <li><a href="#">Allocation & Transfer</a></li>
+      <li><a href="#">Resource Booking</a></li>
+      <li><a href="#">Maintenance</a></li>
+      <li><a href="#">Audit</a></li>
+      <li><a href="#">Reports</a></li>
+      <li><a href="#" class="active">Notifications</a></li>
+    </ul>
+  </aside>
+
+  <main class="main-content">
+    
+    <h1 class="section-title">Activity logs & Notifications</h1>
+
+    <div class="filter-group">
+      <button class="filter-btn active" onclick="filterNotifications('all', this)">All</button>
+      <button class="filter-btn" onclick="filterNotifications('alert', this)">Alerts</button>
+      <button class="filter-btn" onclick="filterNotifications('approval', this)">Approvals</button>
+      <button class="filter-btn" onclick="filterNotifications('booking', this)">Bookings</button>
+    </div>
+
+    <div class="notifications-card">
+      <ul class="notif-list">
+        
+        <li class="notif-item" data-category="booking">
+          <div class="notif-content">
+            <div class="dot dot-info"></div>
+            <span>Laptop <span class="highlight-text">AF-0114</span> assigned to Priya shah</span>
+          </div>
+          <span class="notif-time">3m ago</span>
+        </li>
+
+        <li class="notif-item" data-category="approval">
+          <div class="notif-content">
+            <div class="dot dot-success"></div>
+            <span>Maintenance request <span class="highlight-text">AF-0055</span> approved</span>
+          </div>
+          <span class="notif-time">15m ago</span>
+        </li>
+
+        <li class="notif-item" data-category="booking">
+          <div class="notif-content">
+            <div class="dot dot-info"></div>
+            <span>Booking confirmed - Room 312 - 2:00 to 3:00 PM</span>
+          </div>
+          <span class="notif-time">1h ago</span>
+        </li>
+
+        <li class="notif-item" data-category="approval">
+          <div class="notif-content">
+            <div class="dot dot-success"></div>
+            <span>Transfer approved - <span class="highlight-text">AF-0055</span> to facilities dept</span>
+          </div>
+          <span class="notif-time">3h ago</span>
+        </li>
+
+        <li class="notif-item" data-category="alert">
+          <div class="notif-content">
+            <div class="dot dot-alert"></div>
+            <span>Overdue return - <span class="highlight-text">AF-0021</span> was due 5 days ago</span>
+          </div>
+          <span class="notif-time">1d ago</span>
+        </li>
+
+        <li class="notif-item" data-category="alert">
+          <div class="notif-content">
+            <div class="dot dot-alert"></div>
+            <span>Audit discrepancy flagged - <span class="highlight-text">AF-0092</span> damaged</span>
+          </div>
+          <span class="notif-time">2d ago</span>
+        </li>
+
+      </ul>
+    </div>
+
+  </main>
+  <script>
+    function filterNotifications(category, clickedButton) {
+      const buttons = document.querySelectorAll('.filter-btn');
+      buttons.forEach(btn => btn.classList.remove('active'));
+      clickedButton.classList.add('active');
+      const listItems = document.querySelectorAll('.notif-item');
+      
+      listItems.forEach(item => {
+        if (category === 'all' || item.getAttribute('data-category') === category) {
+          item.style.display = 'flex'; 
+        } else {
+          item.style.display = 'none'; 
+        }
+      });
+    }
+  </script>
+</body>
+</html>
