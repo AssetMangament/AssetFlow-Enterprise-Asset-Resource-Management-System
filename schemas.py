@@ -29,3 +29,14 @@ class TicketResponse(TicketCreate):
 
     class Config:
         from_attributes = True # ya orm_mode = True
+class DepartmentCreate(BaseModel):
+    name: str
+    head: str
+    parent_dept: str = "--"
+    status: str = "Active"
+
+class DepartmentResponse(DepartmentCreate):
+    id: int
+
+    class Config:
+        from_attributes = True

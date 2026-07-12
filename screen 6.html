@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AssetFlow - Resource Booking</title>
+  <style>
+    /* Global Reset & Typography */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+
+    body {
+      background-color: #f1f5f9; /* Design token canvas grey background */
+      color: #1e293b;
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* Sidebar Layout - Persistent Navigation branding */
+    .sidebar {
+      width: 260px;
+      background-color: #0f172a; /* Core deep corporate navy */
+      color: #ffffff;
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+    }
+
+    .sidebar-header {
+      padding: 24px;
+      font-size: 1.25rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      border-bottom: 1px solid #1e293b;
+    }
+
+    .nav-links {
+      list-style: none;
+      padding: 16px 8px;
+    }
+
+    .nav-links li {
+      margin-bottom: 4px;
+    }
+
+    .nav-links a {
+      display: block;
+      padding: 12px 16px;
+      color: #94a3b8;
+      text-decoration: none;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      font-weight: 500;
+      transition: all 0.2s ease;
+    }
+
+    .nav-links a:hover {
+      background-color: #1e293b;
+      color: #ffffff;
+    }
+
+    /* Active State updated for the Resource Booking link module frame */
+    .nav-links a.active {
+      background-color: #1e293b;
+      color: #38bdf8;            /* Bright signature branding blue */
+      border: 1px solid #38bdf8; /* Outlined focus active border container indicator */
+      font-weight: 600;
+    }
+
+    /* Main Operational Workspace Canvas */
+    .main-content {
+      flex-grow: 1;
+      padding: 40px;
+      overflow-y: auto;
+      background-color: #ffffff; /* Clean unified white workspace canvas */
+    }
+
+    .section-meta {
+      font-size: 0.9rem;
+      color: #64748b;
+      margin-bottom: 24px;
+    }
+
+    /* Primary Asset Input Selector Focus Block */
+    .form-group {
+      margin-bottom: 32px;
+      max-width: 700px;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: #0f172a;
+      margin-bottom: 8px;
+    }
+
+    .form-select {
+      width: 100%;
+      padding: 12px 16px;
+      background-color: #f8fafc;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      color: #1e293b;
+      font-size: 0.95rem;
+      outline: none;
+      font-weight: 500;
+    }
+
+    /* Timeline Matrix Structural Architecture Container */
+    .timeline-container {
+      max-width: 700px;
+      margin-bottom: 32px;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      position: relative;
+    }
+
+    /* Base Timeline Slot Entry Point Rows */
+    .time-row {
+      display: flex;
+      min-height: 54px;
+      position: relative;
+    }
+
+    .time-label {
+      width: 65px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: #475569;
+      padding-top: 2px;
+      user-select: none;
+    }
+
+    .slot-cell {
+      flex-grow: 1;
+      border-top: 1px dashed #e2e8f0;
+      position: relative;
+    }
+
+    .time-row:last-child .slot-cell {
+      border-bottom: 1px dashed #e2e8f0;
+    }
+
+    /* Absolute Overlay Scheduler Cards Components */
+    .booking-card {
+      position: absolute;
+      left: 65px;
+      right: 0;
+      border-radius: 8px;
+      padding: 10px 16px;
+      font-size: 0.9rem;
+      font-weight: 500;
+      z-index: 2;
+    }
+
+    /* Confirmed State Booking Blocks Layout */
+    .booking-card.confirmed {
+      top: 4px;
+      height: 48px; /* Spans 9:00 to 10:00 precisely */
+      background-color: #0f172a; /* Brand palette deep navy corporate theme fill */
+      color: #ffffff;
+      border-left: 4px solid #38bdf8; /* Brand highlight token accent edge */
+      box-shadow: 0 4px 6px -1px rgba(15, 23, 42, 0.08);
+    }
+
+    /* Conflict Block Exception State Overlay Indicator */
+    .booking-card.conflict {
+      top: 32px;    /* Off-set start representing half-past hour (9:30) */
+      height: 52px; /* Stretches past 10:00 marker down to 10:30 marker */
+      background-color: #fff1f2; /* Soft mismatch alerting tone fill block */
+      border: 1px dashed #ef4444; /* Bright danger error border stroke line */
+      color: #991b1b;
+      z-index: 3; /* Render layered slightly over the baseline card to show clash */
+    }
+
+    /* Core Operational Action Interaction Point */
+    .btn-book {
+      padding: 12px 28px;
+      background-color: #0f172a; /* Brand consistent navy action point */
+      border: 1px solid #0f172a;
+      border-radius: 8px;
+      color: #ffffff;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .btn-book:hover {
+      background-color: #1e293b;
+      border-color: #1e293b;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Left Global Sidebar Navigation Panel -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      AssetFlow
+    </div>
+    <ul class="nav-links">
+     <ul class="nav-links">
+      <li><a href="screen2.html">Dashboard</a></li>
+      <li><a href="screen 3.html">Organization setup</a></li>
+      <li><a href="screen 4.html">Assets</a></li>
+      <li><a href="screen 5.html">Allocation & Transfer</a></li>
+      <li><a href="screen 6.html">Resource Booking</a></li>
+      <li><a href="screen7.html">Maintenance</a></li>
+      <li><a href="screen8.html">Audit</a></li>
+      <li><a href="screen9.html">Reports</a></li>
+      <li><a href="screen 10.html">Notifications</a></li>
+    </ul>
+  </aside>
+
+  <!-- Right Primary Control Context Window Frame Panel -->
+  <main class="main-content">
+    <div class="section-meta">Screen 6 Resource booking</div>
+
+    <!-- Target Resource Context Input Row -->
+    <div class="form-group">
+      <label class="form-label" for="resource-select">Resource</label>
+      <select id="resource-select" class="form-select">
+        <option selected>Conference room B2 - Tue, 7 Jul</option>
+      </select>
+    </div>
+
+    <!-- Core Dynamic Scheduler Calendar Grid Block Matrix -->
+    <div class="timeline-container">
+      
+      <!-- Confirmed Standard Allocation Element Card Component -->
+      <div class="booking-card confirmed">
+        Booked - Procurement Team - 9 to 10
+      </div>
+
+      <!-- Live Overlapping Conflict Schedule Validation Alert Box Component -->
+      <div class="booking-card conflict">
+        Requested 9:30 to 10:30 - conflict - slot is unavailable
+      </div>
+
+      <!-- Time Interval Track Segments Row Anchors -->
+      <div class="time-row">
+        <div class="time-label">9:00</div>
+        <div class="slot-cell"></div>
+      </div>
+      <div class="time-row">
+        <div class="time-label">10:00</div>
+        <div class="slot-cell"></div>
+      </div>
+      <div class="time-row">
+        <div class="time-label">11:00</div>
+        <div class="slot-cell"></div>
+      </div>
+      <div class="time-row">
+        <div class="time-label">12:00</div>
+        <div class="slot-cell"></div>
+      </div>
+      <div class="time-row">
+        <div class="time-label">1:00</div>
+        <div class="slot-cell"></div>
+      </div>
+    </div>
+
+    <!-- Execution Submit CTA action interaction block -->
+    <button class="btn-book">Book a slot</button>
+  </main>
+
+</body>
+</html>

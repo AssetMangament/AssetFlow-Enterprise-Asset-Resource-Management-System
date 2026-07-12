@@ -119,3 +119,35 @@ def create_ticket(ticket: schemas.TicketCreate, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(new_ticket)
     return new_ticket
+# --- REPORTS & ANALYTICS API ---
+@app.get("/api/reports/summary")
+def get_reports_summary(db: Session = Depends(get_db)):
+    # Future mein ise actual DB se calculate karenge, abhi frontend connect karne ke liye structured data bhej rahe hain
+    return {
+        "most_used": [
+            {"name": "Macbook Pro (AF-0112)", "stat": "booked 18 times"},
+            {"name": "Meeting Room 3A", "stat": "45 hrs this month"},
+            {"name": "Projector (AF-008)", "stat": "14 uses"}
+        ],
+        "idle_assets": [
+            {"name": "Scanner AF-0021", "stat": "unused 60+ days"},
+            {"name": "Chair AF-0418", "stat": "unused 45 days"}
+        ]
+    }
+# --- ORGANIZATION SETUP (DEPARTMENTS) API ---
+@app.get("/api/departments", response_model=list[schemas.DepartmentResponse])
+def get_departments(db: Session = Depends(get_db)):
+    return db.query(models.Department).all()
+
+@app.post("/api/departments", response_model=schemas.DepartmentResponse)
+def create_department(dept: schemas.DepartmentCreate, db: Session = Depends(get_db)):
+    new_dept = models.Department(
+        name=dept.name,
+        head=dept.head,
+        parent_dept=dept.parent_dept,
+        status=dept.status
+    )
+    db.add(new_dept)
+    db.commit()
+    db.refresh(new_dept)
+    return new_dept
