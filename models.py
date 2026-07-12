@@ -1,63 +1,69 @@
-from sqlalchemy import Column, Integer, String, Boolean, ForeignKey
+from sqlalchemy import Column, Integer, String, DateTime, Text
 from database import Base
-from sqlalchemy import Column, Integer, String, Boolean, Float, DateTime
-from sqlalchemy.orm import relationship
-class Department(Base):
-    __tablename__ = "departments"
-    
-    id = Column(Integer, primary_key=True, index=True)
-    name = Column(String, unique=True, index=True, nullable=False)
-    is_active = Column(Boolean, default=True)
-    
-    users = relationship("User", back_populates="department")
+import datetime
 
 class User(Base):
     __tablename__ = "users"
-    
     id = Column(Integer, primary_key=True, index=True)
-    name = Column(String, nullable=False)
-    email = Column(String, unique=True, index=True, nullable=False)
-    hashed_password = Column(String, nullable=False)
-    # Default role Employee set kiya hai (Hackathon Guideline)
-    role = Column(String, default="Employee") 
-    is_active = Column(Boolean, default=True)
-    
-    department_id = Column(Integer, ForeignKey("departments.id"), nullable=True)
-    
-    department = relationship("Department", back_populates="users")
+    name = Column(String)
+    email = Column(String, unique=True, index=True)
+    password = Column(String)
+    role = Column(String, default="employee") 
+
+class Department(Base):
+    __tablename__ = "departments"
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String, unique=True, index=True)
+    head = Column(String, default="N/A")
+    parent_dept = Column(String, default="--")
+    status = Column(String, default="Active")
+
 class Asset(Base):
     __tablename__ = "assets"
-    
     id = Column(Integer, primary_key=True, index=True)
-    asset_tag = Column(String, unique=True, index=True, nullable=False)
-    name = Column(String, nullable=False)
-    category = Column(String, nullable=False)
-    status = Column(String, default="Available") # Statuses: Available, Allocated, Under Maintenance, etc.
-class MaintenanceTicket(Base):
-    __tablename__ = "maintenance_tickets"
+    asset_tag = Column(String, unique=True, index=True) 
+    name = Column(String)
+    serial_number = Column(String, unique=True)
+    category = Column(String, default="General")
+    department = Column(String)
+    status = Column(String, default="Available") 
+    location = Column(String, default="Main Office")
 
-    id = Column(Integer, primary_key=True, index=True)
-    asset_id = Column(String, index=True)  # Example: AF-0062
-    description = Column(String)
-    status = Column(String, default="Pending") # Pending, Approved, In Progress, Resolved etc.
-# --- ASSET ALLOCATION MODEL ---
 class Allocation(Base):
     __tablename__ = "allocations"
     id = Column(Integer, primary_key=True, index=True)
-    asset_name = Column(String, index=True)
+    asset_tag = Column(String)
     assigned_to = Column(String)
-    status = Column(String, default="Active")
+    reason = Column(Text)
+    date_allocated = Column(DateTime, default=datetime.datetime.utcnow)
 
-# --- RESOURCE BOOKING MODEL ---
 class Booking(Base):
     __tablename__ = "bookings"
     id = Column(Integer, primary_key=True, index=True)
-    resource_name = Column(String, index=True)
+    resource_name = Column(String)
     start_time = Column(DateTime)
     end_time = Column(DateTime)
     booked_by = Column(String)
-class AuditCycle(Base):
-    __tablename__ = "audit_cycles"
+
+class MaintenanceTicket(Base):
+    __tablename__ = "maintenance_tickets"
     id = Column(Integer, primary_key=True, index=True)
-    name = Column(String) # e.g., "Q2 Audit"
-    status = Column(String, default="Open") # Open, Closed
+    asset_tag = Column(String)
+    description = Column(Text)
+    status = Column(String, default="Pending") 
+    created_at = Column(DateTime, default=datetime.datetime.utcnow)
+
+class AuditRecord(Base):
+    __tablename__ = "audit_records"
+    id = Column(Integer, primary_key=True, index=True)
+    asset_tag = Column(String)
+    expected_location = Column(String)
+    verification_status = Column(String) 
+    audit_date = Column(DateTime, default=datetime.datetime.utcnow)
+
+class Notification(Base):
+    __tablename__ = "notifications"
+    id = Column(Integer, primary_key=True, index=True)
+    category = Column(String) 
+    message = Column(String)
+    created_at = Column(DateTime, default=datetime.datetime.utcnow)
