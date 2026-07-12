@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AssetFlow - Maintenance Management</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+    }
+    body {
+      background-color: #f1f5f9; 
+      color: #1e293b;
+      display: flex;
+      min-height: 100vh;
+    }
+    .sidebar {
+      width: 260px;
+      background-color: #0f172a; 
+      color: #ffffff;
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+    }
+
+    .sidebar-header {
+      padding: 24px;
+      font-size: 1.25rem;
+      font-weight: 700;
+      border-bottom: 1px solid #1e293b;
+    }
+
+    .nav-links {
+      list-style: none;
+      padding: 16px 8px;
+    }
+
+    .nav-links li {
+      margin-bottom: 4px;
+    }
+
+    .nav-links a {
+      display: block;
+      padding: 12px 16px;
+      color: #94a3b8;
+      text-decoration: none;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      font-weight: 500;
+    }
+
+    .nav-links a:hover {
+      background-color: #1e293b;
+      color: #ffffff;
+    }
+    .nav-links a.active {
+      background-color: #38bdf8; 
+      color: #0f172a;
+      font-weight: 600;
+    }
+    .main-content {
+      flex-grow: 1;
+      padding: 40px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .header-section {
+      margin-bottom: 24px;
+    }
+
+    .section-title {
+      font-size: 1.5rem;
+      color: #0f172a;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .subtitle {
+      color: #64748b;
+      font-size: 0.95rem;
+    }
+    .kanban-board {
+      display: flex;
+      gap: 20px;
+      flex-grow: 1;
+      overflow-x: auto; 
+      padding-bottom: 20px; 
+    }
+    .kanban-column {
+      background-color: #e2e8f0;
+      min-width: 280px;
+      border-radius: 12px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .column-header {
+      font-size: 1rem;
+      font-weight: 600;
+      color: #0f172a;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .card-count {
+      background-color: #cbd5e1;
+      color: #475569;
+      font-size: 0.8rem;
+      padding: 2px 8px;
+      border-radius: 12px;
+    }
+    .kanban-card {
+      background-color: #ffffff; 
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      padding: 16px;
+      box-shadow: 0 2px 4px rgba(15, 23, 42, 0.05);
+      cursor: grab;
+    }
+
+    .kanban-card:active {
+      cursor: grabbing;
+    }
+    .asset-id {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: #38bdf8; 
+      margin-bottom: 6px;
+      display: block;
+    }
+    .issue-desc {
+      font-size: 0.95rem;
+      color: #1e293b;
+      line-height: 1.4;
+      font-weight: 500;
+    }
+  </style>
+</head>
+<body>
+
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      AssetFlow
+    </div>
+    <ul class="nav-links">
+      <li><a href="screen2.html">Dashboard</a></li>
+      <li><a href="#">Organization setup</a></li>
+      <li><a href="#">Assets</a></li>
+      <li><a href="#">Allocation & Transfer</a></li>
+      <li><a href="#">Resource Booking</a></li>
+      <li><a href="#" class="active">Maintenance</a></li>
+      <li><a href="#">Audit</a></li>
+      <li><a href="#">Reports</a></li>
+      <li><a href="#">Notifications</a></li>
+    </ul>
+  </aside>
+
+  <main class="main-content">   
+    <div class="header-section">
+      <h1 class="section-title">Maintenance Management</h1>
+      <p class="subtitle">Approving a card moves the asset to under maintenance; resolving returns it to available.</p>
+    </div>
+   <div class="kanban-board">   
+      <div class="kanban-column" id="col-Pending">
+        <div class="column-header">
+          Pending <span class="card-count" id="count-Pending">0</span>
+        </div>        
+      </div>
+
+      <div class="kanban-column" id="col-Approved">
+        <div class="column-header">
+          Approved <span class="card-count" id="count-Approved">0</span>
+        </div>     
+      </div>
+
+      <div class="kanban-column" id="col-TechnicianAssigned">
+        <div class="column-header">
+          Technician Assigned <span class="card-count" id="count-TechnicianAssigned">0</span>
+        </div>
+      </div>
+
+      <div class="kanban-column" id="col-InProgress">
+        <div class="column-header">
+          In Progress <span class="card-count" id="count-InProgress">0</span>
+        </div>
+      </div>
+
+      <div class="kanban-column" id="col-Resolved">
+        <div class="column-header">
+          Resolved <span class="card-count" id="count-Resolved">0</span>
+        </div>
+      </div>
+    </div>
+  </main>
+  
+  <script>
+  const API_URL = "http://127.0.0.1:8000";
+
+  async function fetchAndRenderTickets() {
+    try {
+      const response = await fetch(`${API_URL}/api/maintenance/tickets`);
+      const tickets = await response.json();
+
+      // Counters monitor karne ke liye object
+      const counts = { 
+        "Pending": 0, 
+        "Approved": 0, 
+        "Technician Assigned": 0, 
+        "In Progress": 0, 
+        "Resolved": 0 
+      };
+
+      // Backend se aaye har ticket ko process karna
+      tickets.forEach(ticket => {
+        // Spaces hatana taaki ID sahi match ho (e.g., "In Progress" -> "InProgress")
+        const safeStatus = ticket.status.replace(/\s+/g, '');
+        const column = document.getElementById(`col-${safeStatus}`);
+
+        if (column) {
+          if (counts.hasOwnProperty(ticket.status)) {
+            counts[ticket.status]++;
+          }
+          
+          // Dynamic card banana
+          const card = document.createElement("div");
+          card.className = "kanban-card";
+          if (ticket.status === "Resolved") {
+             card.style.borderLeft = "4px solid #10b981"; // Green indicator
+          }
+          
+          card.innerHTML = `
+            <span class="asset-id">${ticket.asset_id}</span>
+            <p class="issue-desc">${ticket.description}</p>
+          `;
+          
+          column.appendChild(card);
+        }
+      });
+
+      // UI ke counters ko badalna
+      document.getElementById("count-Pending").innerText = counts["Pending"];
+      document.getElementById("count-Approved").innerText = counts["Approved"];
+      document.getElementById("count-TechnicianAssigned").innerText = counts["Technician Assigned"];
+      document.getElementById("count-InProgress").innerText = counts["In Progress"];
+      document.getElementById("count-Resolved").innerText = counts["Resolved"];
+
+    } catch (error) {
+      console.error("Error fetching tickets:", error);
+    }
+  }
+
+  // Page load par execute karein
+  window.onload = fetchAndRenderTickets;
+  </script>
+</body>
+</html>

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AssetFlow - Login</title>
+  <title>AssetFlow - Authentication</title>
   <style>
     /* Global Reset & Typography */
     * {
@@ -14,7 +14,7 @@
     }
 
     body {
-      background-color: #f1f5f9; /* Soft, clean off-white background */
+      background-color: #f1f5f9;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -34,7 +34,7 @@
 
     /* Header Bar */
     .card-header {
-      background-color: #0f172a; /* Professional Deep Navy Header */
+      background-color: #0f172a;
       color: #ffffff;
       text-align: center;
       padding: 16px;
@@ -52,7 +52,7 @@
     .avatar-container {
       display: flex;
       justify-content: center;
-      margin-bottom: 24px;
+      margin-bottom: 10px;
     }
 
     .avatar {
@@ -63,10 +63,36 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      color: #38bdf8; /* Vibrant light blue initials */
+      color: #38bdf8;
       font-weight: 600;
       font-size: 1.1rem;
       box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    }
+
+    /* TABS */
+    .tabs {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 20px;
+      border-bottom: 1px solid #e2e8f0;
+    }
+    .tab-btn {
+      background: none;
+      border: none;
+      padding: 10px 20px;
+      cursor: pointer;
+      font-weight: 600;
+      color: #94a3b8;
+      border-bottom: 2px solid transparent;
+      transition: all 0.2s;
+      font-size: 0.95rem;
+    }
+    .tab-btn.active {
+      color: #0ea5e9;
+      border-bottom: 2px solid #0ea5e9;
+    }
+    .hidden {
+      display: none;
     }
 
     /* Form Fields */
@@ -78,7 +104,7 @@
     label {
       display: block;
       font-size: 0.9rem;
-      color: #475569; /* Slate grey labels */
+      color: #475569;
       margin-bottom: 8px;
       font-weight: 500;
     }
@@ -102,7 +128,7 @@
 
     input:focus {
       background-color: #ffffff;
-      border-color: #0ea5e9; /* Light blue accent focus border */
+      border-color: #0ea5e9;
       box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.15);
     }
 
@@ -110,7 +136,7 @@
     .forgot-link {
       display: block;
       text-align: right;
-      color: #0284c7; /* Corporate blue link */
+      color: #0284c7;
       font-size: 0.85rem;
       text-decoration: none;
       margin-top: -12px;
@@ -134,7 +160,7 @@
 
     /* Bottom Info Section */
     .info-box {
-      background-color: #f0fdf4; /* Light mint/emerald background */
+      background-color: #f0fdf4;
       border: 1px solid #bbf7d0;
       border-radius: 8px;
       padding: 14px 16px;
@@ -144,15 +170,15 @@
 
     .info-box p {
       font-size: 0.85rem;
-      color: #166534; /* Deep emerald text */
+      color: #166534;
       line-height: 1.5;
     }
 
-    /* Create Account Button */
+    /* Submit Button */
     .btn-submit {
       width: 100%;
       padding: 12px;
-      background-color: #0f172a; /* Matching deep navy button */
+      background-color: #0f172a;
       border: 1px solid #0f172a;
       border-radius: 8px;
       color: #ffffff;
@@ -177,32 +203,47 @@
 
   <div class="login-card">
     <div class="card-header">
-      AssetFlow – login
+      AssetFlow
     </div>
     
     <div class="card-body">
-      <!-- Circular Avatar -->
       <div class="avatar-container">
         <div class="avatar">AF</div>
       </div>
 
-      <!-- Login Form -->
-      <form id="signupForm">
+      <div class="tabs">
+        <button class="tab-btn active" id="tabLogin" onclick="toggleForm('login')">Login</button>
+        <button class="tab-btn" id="tabSignup" onclick="toggleForm('signup')">Sign Up</button>
+      </div>
+
+      <form id="loginForm">
         <div class="form-group">
-          <label for="email">Email</label>
-          <input type="email" id="email" placeholder="name@company.com" required>
+          <label for="loginEmail">Email</label>
+          <input type="email" id="loginEmail" placeholder="name@company.com" required>
         </div>
 
         <div class="form-group">
-          <label for="password">Password</label>
-          <input type="password" id="password" value="**********" required>
+          <label for="loginPassword">Password</label>
+          <input type="password" id="loginPassword" placeholder="**********" required>
         </div>
 
         <a href="#" class="forgot-link">Forgot password</a>
+        <button type="submit" class="btn-submit">Login</button>
+      </form>
+
+      <form id="signupForm" class="hidden">
+        <div class="form-group">
+          <label for="signupEmail">Email</label>
+          <input type="email" id="signupEmail" placeholder="name@company.com" required>
+        </div>
+
+        <div class="form-group">
+          <label for="signupPassword">Password</label>
+          <input type="password" id="signupPassword" placeholder="**********" required>
+        </div>
 
         <hr class="divider">
 
-        <!-- Info/Sign-up Box -->
         <div class="form-group">
           <label>New here?</label>
           <div class="info-box">
@@ -212,42 +253,55 @@
 
         <button type="submit" class="btn-submit">Create Account</button>
       </form>
+
     </div>
   </div>
+
 <script>
   // Backend API URL
   const API_URL = "http://127.0.0.1:8000";
 
-  // Elements select karna
-  const form = document.getElementById("signupForm");
-  const emailInput = document.getElementById("email");
-  const passwordInput = document.getElementById("password");
-  const submitBtn = document.querySelector(".btn-submit");
+  // Form Toggle Logic
+  function toggleForm(type) {
+    const loginForm = document.getElementById("loginForm");
+    const signupForm = document.getElementById("signupForm");
+    const tabLogin = document.getElementById("tabLogin");
+    const tabSignup = document.getElementById("tabSignup");
 
-  form.addEventListener("submit", async (e) => {
-    e.preventDefault(); // Page reload rokne ke liye
+    if (type === 'login') {
+      loginForm.classList.remove('hidden');
+      signupForm.classList.add('hidden');
+      tabLogin.classList.add('active');
+      tabSignup.classList.remove('active');
+    } else {
+      signupForm.classList.remove('hidden');
+      loginForm.classList.add('hidden');
+      tabSignup.classList.add('active');
+      tabLogin.classList.remove('active');
+    }
+  }
 
-    const emailValue = emailInput.value;
-    const passwordValue = passwordInput.value;
-    
-    // Email se name extract karna
+  // --- SIGNUP LOGIC ---
+  const signupForm = document.getElementById("signupForm");
+  const signupEmailInput = document.getElementById("signupEmail");
+  const signupPasswordInput = document.getElementById("signupPassword");
+  const signupBtn = signupForm.querySelector(".btn-submit");
+
+  signupForm.addEventListener("submit", async (e) => {
+    e.preventDefault(); 
+    const emailValue = signupEmailInput.value;
+    const passwordValue = signupPasswordInput.value;
     const nameValue = emailValue.split('@')[0];
 
-    const userData = {
-      name: nameValue,
-      email: emailValue,
-      password: passwordValue
-    };
+    const userData = { name: nameValue, email: emailValue, password: passwordValue };
 
     try {
-      submitBtn.innerText = "Creating Account...";
-      submitBtn.style.opacity = "0.7";
+      signupBtn.innerText = "Creating Account...";
+      signupBtn.style.opacity = "0.7";
 
       const response = await fetch(`${API_URL}/api/signup`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(userData)
       });
 
@@ -255,10 +309,8 @@
 
       if (response.ok) {
         alert("Account created successfully! Welcome " + result.name);
-        // Redirect to Screen 2
         window.location.href = "screen2.html"; 
       } else {
-        // Agar FastAPI error deta hai (422 ya 400)
         if (result.detail && Array.isArray(result.detail)) {
           alert("Input Error: " + result.detail[0].msg);
         } else {
@@ -269,8 +321,46 @@
       console.error("Fetch error:", error);
       alert("Backend server se connect nahi ho paya. Kya FastAPI chal raha hai?");
     } finally {
-      submitBtn.innerText = "Create Account";
-      submitBtn.style.opacity = "1";
+      signupBtn.innerText = "Create Account";
+      signupBtn.style.opacity = "1";
+    }
+  });
+
+  // --- LOGIN LOGIC ---
+  const loginForm = document.getElementById("loginForm");
+  const loginEmailInput = document.getElementById("loginEmail");
+  const loginPasswordInput = document.getElementById("loginPassword");
+  const loginBtn = loginForm.querySelector(".btn-submit");
+
+  loginForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const emailValue = loginEmailInput.value;
+    const passwordValue = loginPasswordInput.value;
+
+    try {
+      loginBtn.innerText = "Logging in...";
+      loginBtn.style.opacity = "0.7";
+
+      const response = await fetch(`${API_URL}/auth/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: emailValue, password: passwordValue })
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        alert("Login successful! Welcome back.");
+        window.location.href = "screen2.html"; 
+      } else {
+        alert("Login Failed: " + (result.detail || "Check your credentials"));
+      }
+    } catch (error) {
+      console.error("Fetch error:", error);
+      alert("Backend server se connect nahi ho paya.");
+    } finally {
+      loginBtn.innerText = "Login";
+      loginBtn.style.opacity = "1";
     }
   });
 </script>

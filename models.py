@@ -33,3 +33,10 @@ class Asset(Base):
     name = Column(String, nullable=False)
     category = Column(String, nullable=False)
     status = Column(String, default="Available") # Statuses: Available, Allocated, Under Maintenance, etc.
+class MaintenanceTicket(Base):
+    __tablename__ = "maintenance_tickets"
+
+    id = Column(Integer, primary_key=True, index=True)
+    asset_id = Column(String, index=True)  # Example: AF-0062
+    description = Column(String)
+    status = Column(String, default="Pending") # Pending, Approved, In Progress, Resolved etc.

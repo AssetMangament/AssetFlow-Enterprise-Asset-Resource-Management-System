@@ -16,3 +16,16 @@ class UserResponse(BaseModel):
 
     class Config:
         from_attributes = True # SQLAlchemy models ko Pydantic me convert karne ke liye
+class UserLogin(BaseModel):
+    email: str
+    password: str
+class TicketCreate(BaseModel):
+    asset_id: str
+    description: str
+    status: str = "Pending"
+
+class TicketResponse(TicketCreate):
+    id: int
+
+    class Config:
+        from_attributes = True # ya orm_mode = True
