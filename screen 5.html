@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AssetFlow - Allocation & Transfer</title>
+  <style>
+    /* Global Reset & Typography */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+
+    body {
+      background-color: #f1f5f9; /* System canvas grey background */
+      color: #1e293b;
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* Sidebar Layout - Synchronized Navigation branding */
+    .sidebar {
+      width: 260px;
+      background-color: #0f172a; /* Core deep corporate navy */
+      color: #ffffff;
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+    }
+
+    .sidebar-header {
+      padding: 24px;
+      font-size: 1.25rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      border-bottom: 1px solid #1e293b;
+    }
+
+    .nav-links {
+      list-style: none;
+      padding: 16px 8px;
+    }
+
+    .nav-links li {
+      margin-bottom: 4px;
+    }
+
+    .nav-links a {
+      display: block;
+      padding: 12px 16px;
+      color: #94a3b8;
+      text-decoration: none;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      font-weight: 500;
+      transition: all 0.2s ease;
+    }
+
+    .nav-links a:hover {
+      background-color: #1e293b;
+      color: #ffffff;
+    }
+
+    /* Active State updated for the Allocation & Transfer link frame */
+    .nav-links a.active {
+      background-color: #1e293b;
+      color: #38bdf8;            /* Bright signature branding blue */
+      border: 1px solid #38bdf8; /* Box outline mapping wireframe context */
+      font-weight: 600;
+    }
+
+    /* Main Operational Form Canvas */
+    .main-content {
+      flex-grow: 1;
+      padding: 40px;
+      overflow-y: auto;
+      background-color: #ffffff; /* Crisp white main field context */
+    }
+
+    .section-meta {
+      font-size: 0.9rem;
+      color: #64748b;
+      margin-bottom: 24px;
+    }
+
+    /* Form Design controls */
+    .form-group {
+      margin-bottom: 24px;
+      max-width: 700px;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: #0f172a;
+      margin-bottom: 8px;
+    }
+
+    .form-input, .form-select, .form-textarea {
+      width: 100%;
+      padding: 12px 16px;
+      background-color: #f8fafc;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      color: #1e293b;
+      font-size: 0.95rem;
+      outline: none;
+      transition: all 0.2s;
+    }
+
+    .form-input:focus, .form-select:focus, .form-textarea:focus {
+      background-color: #ffffff;
+      border-color: #38bdf8;
+      box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.15);
+    }
+
+    /* Form Fields Double-Row Configuration block */
+    .form-row {
+      display: flex;
+      gap: 20px;
+      margin-bottom: 24px;
+      max-width: 700px;
+    }
+
+    .form-row .form-group {
+      flex: 1;
+      margin-bottom: 0;
+    }
+
+    /* Error block: Blocked Double-allocation protection element */
+    .error-banner {
+      background-color: #fef2f2; /* Pale pink/red error container block */
+      border: 1px solid #fecaca;
+      color: #991b1b;
+      padding: 16px;
+      border-radius: 8px;
+      margin-bottom: 24px;
+      max-width: 700px;
+      font-size: 0.95rem;
+      line-height: 1.5;
+    }
+
+    .error-title {
+      font-weight: 700;
+      margin-bottom: 2px;
+    }
+
+    /* Sub-section labels architecture */
+    .subsection-heading {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #0f172a;
+      margin-bottom: 16px;
+      margin-top: 8px;
+    }
+
+    /* Submit CTA action interaction block */
+    .btn-submit {
+      padding: 12px 28px;
+      background-color: #0f172a; /* Brand consistent navy action point */
+      border: 1px solid #0f172a;
+      border-radius: 8px;
+      color: #ffffff;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .btn-submit:hover {
+      background-color: #1e293b;
+      border-color: #1e293b;
+    }
+
+    /* Horizontal Rule line divider component */
+    .divider {
+      border: 0;
+      height: 1px;
+      background-color: #e2e8f0;
+      margin: 32px 0 24px 0;
+      max-width: 700px;
+    }
+
+    /* Bottom Historic Log listing layout */
+    .history-section {
+      max-width: 700px;
+    }
+
+    .history-title {
+      font-size: 1rem;
+      font-weight: 600;
+      color: #0f172a;
+      margin-bottom: 12px;
+    }
+
+    .history-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .history-item {
+      font-size: 0.95rem;
+      color: #475569;
+      line-height: 1.4;
+    }
+
+    .history-date {
+      font-weight: 600;
+      color: #334155;
+      display: inline-block;
+      width: 60px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Left Global Navigation Bar Framework -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      AssetFlow
+    </div>
+    <ul class="nav-links">
+      <li><a href="#">Dashboard</a></li>
+      <li><a href="#">Organization setup</a></li>
+      <li><a href="#">Assets</a></li>
+      <li><a href="#" class="active">Allocation & Transfer</a></li>
+      <li><a href="#">Resource Booking</a></li>
+      <li><a href="#">Maintenance</a></li>
+      <li><a href="#">Audit</a></li>
+      <li><a href="#">Reports</a></li>
+      <li><a href="#">Notifications</a></li>
+    </ul>
+  </aside>
+
+  <!-- Right Dashboard Dynamic Operation Canvas Frame -->
+  <main class="main-content">
+    <div class="section-meta">Screen 5 Asset allocation & Transfer ( the double-allocation block in action):</div>
+
+    <form onsubmit="event.preventDefault();">
+      
+      <!-- Primary Asset Selection Focus Block -->
+      <div class="form-group">
+        <label class="form-label" for="asset-select">Asset</label>
+        <select id="asset-select" class="form-select">
+          <option selected>AF-0114 - Dell laptop</option>
+        </select>
+      </div>
+
+      <!-- Live Inline Conflict System Alert Validation Container -->
+      <div class="error-banner">
+        <div class="error-title">Already Allocated to Priya shah (Engineering)</div>
+        <div>Direct re-allocation is blocked - submit a transfer request below</div>
+      </div>
+
+      <div class="subsection-heading">Transfer Request</div>
+
+      <!-- Core Form Picklist Row Grid Configuration -->
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" for="from-employee">From</label>
+          <input type="text" id="from-employee" class="form-input" value="Priya Shah" readonly style="color: #64748b; cursor: not-allowed;">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="to-employee">To</label>
+          <select id="to-employee" class="form-select">
+            <option disabled selected value="">Select Employee....</option>
+            <option>Arjun Nair</option>
+            <option>Rohan Mehta</option>
+            <option>Sana Iqbal</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Allocation Workflow Justification Description Text Field -->
+      <div class="form-group">
+        <label class="form-label" for="transfer-reason">Reason</label>
+        <textarea id="transfer-reason" class="form-textarea" rows="4" placeholder="Enter transfer request reasoning details..."></textarea>
+      </div>
+
+      <!-- Action submission element button -->
+      <button type="submit" class="btn-submit">Submit Request</button>
+    </form>
+
+    <hr class="divider">
+
+    <!-- Bottom Records Audit History Frame Segment -->
+    <div class="history-section">
+      <h3 class="history-title">Allocation history</h3>
+      <ul class="history-list">
+        <li class="history-item">
+          <span class="history-date">Mar 12</span> - Allocated to Priya shah - Engineering
+        </li>
+        <li class="history-item">
+          <span class="history-date">Jan 04</span> - Returned by Arjun Nair - condition: good
+        </li>
+      </ul>
+    </div>
+  </main>
+
+</body>
+</html>
