@@ -1,299 +1,61 @@
-from fastapi import FastAPI, Depends, HTTPException, status
+from fastapi import FastAPI, Depends, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
-from passlib.context import CryptContext
-from pydantic import BaseModel # Naya add kiya login schema ke liye
+from pydantic import BaseModel
+
 import models
-import schemas
 from database import engine, get_db
 
-# Login ke liye Pydantic Schema (Taaki error na aaye)
-class UserLogin(BaseModel):
-    email: str
-    password: str
-
-# Tables create karna
+# THIS is where the magic command belongs!
 models.Base.metadata.create_all(bind=engine)
 
-app = FastAPI(title="AssetFlow API")
+app = FastAPI()
 
-# CORS setup for Vanilla JS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  
+    allow_origins=["*"], 
     allow_credentials=True,
-    allow_methods=["*"],  
+    allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# Password hashing setup
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+class AssetCreate(BaseModel):
+    name: str
+    serial_number: str
+    department: str
 
-def get_password_hash(password):
-    return pwd_context.hash(password)
-
-# --- SIGNUP API ENDPOINT ---
-@app.post("/api/signup", response_model=schemas.UserResponse)
-def signup(user: schemas.UserCreate, db: Session = Depends(get_db)):
-    
-    # Validation 1: Check karna ki email pehle se exist toh nahi karti
-    db_user = db.query(models.User).filter(models.User.email == user.email).first()
-    if db_user:
-        raise HTTPException(status_code=400, detail="Email already registered")
-    
-    # Password ko hash karna (Security)
-    hashed_password = get_password_hash(user.password)
-    
-    # Naya user banana (Role by default "Employee" jayega models.py se)
-    new_user = models.User(
-        name=user.name, 
-        email=user.email, 
-        hashed_password=hashed_password
-    )
-    
-    # Database me save karna
-    db.add(new_user)
-    db.commit()
-    db.refresh(new_user)
-    
-    return new_user
 
 @app.get("/api/dashboard")
 def get_dashboard_stats(db: Session = Depends(get_db)):
-    # Database se real-time count nikalna
-    available_count = db.query(models.Asset).filter(models.Asset.status == "Available").count()
-    allocated_count = db.query(models.Asset).filter(models.Asset.status == "Allocated").count()
+    total_assets = db.query(models.Asset).count()
+    allocated_assets = db.query(models.Asset).filter(models.Asset.status == "Allocated").count()
     
-    # Baaki metrics abhi 0 bhej rahe hain, jab unke tables banenge tab inko bhi dynamic kar denge
     return {
-        "available": available_count,
-        "allocated": allocated_count,
-        "overdue": 0,
-        "active_bookings": 0,
-        "pending_transfers": 0,
-        "upcoming_returns": 0
+        "available": total_assets - allocated_assets,
+        "allocated": allocated_assets
     }
 
-@app.get("/")
-def read_root():
-    return {"status": "success", "message": "AssetFlow API is working!"}
+@app.get("/api/assets")
+def get_all_assets(db: Session = Depends(get_db)):
+    return db.query(models.Asset).all()
 
-# --- LOGIN API ENDPOINT (Updated) ---
-@app.post("/auth/login")
-def login_user(user: UserLogin, db: Session = Depends(get_db)):
-    # 1. Database mein user ko email se dhoondna (models.User fix kiya)
-    db_user = db.query(models.User).filter(models.User.email == user.email).first()
-    
-    if not db_user:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Email registered nahi hai. Kripya signup karein."
-        )
-    
-    # 2. Password verify karna
-    if not pwd_context.verify(user.password, db_user.hashed_password):
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Galat password. Kripya fir se koshish karein."
-        )
-    
-    # 3. Successful login par response bhejna
-    return {
-        "status": "success",
-        "message": "Login successful",
-        "user": {"id": db_user.id, "name": db_user.name, "email": db_user.email}
-    }
-# --- MAINTENANCE API ---
-@app.get("/api/maintenance/tickets", response_model=list[schemas.TicketResponse])
-def get_tickets(db: Session = Depends(get_db)):
-    return db.query(models.MaintenanceTicket).all()
-
-@app.post("/api/maintenance/tickets", response_model=schemas.TicketResponse)
-def create_ticket(ticket: schemas.TicketCreate, db: Session = Depends(get_db)):
-    new_ticket = models.MaintenanceTicket(
-        asset_id=ticket.asset_tag,
-        description=ticket.description,
-        status=ticket.status
-    )
-    db.add(new_ticket)
-    db.commit()
-    db.refresh(new_ticket)
-    return new_ticket
-# --- REPORTS & ANALYTICS API ---
-@app.get("/api/reports/summary")
-def get_reports_summary(db: Session = Depends(get_db)):
-    # Future mein ise actual DB se calculate karenge, abhi frontend connect karne ke liye structured data bhej rahe hain
-    return {
-        "most_used": [
-            {"name": "Macbook Pro (AF-0112)", "stat": "booked 18 times"},
-            {"name": "Meeting Room 3A", "stat": "45 hrs this month"},
-            {"name": "Projector (AF-008)", "stat": "14 uses"}
-        ],
-        "idle_assets": [
-            {"name": "Scanner AF-0021", "stat": "unused 60+ days"},
-            {"name": "Chair AF-0418", "stat": "unused 45 days"}
-        ]
-    }
-# --- ORGANIZATION SETUP (DEPARTMENTS) API ---
-@app.get("/api/departments", response_model=list[schemas.DepartmentResponse])
-def get_departments(db: Session = Depends(get_db)):
-    return db.query(models.Department).all()
-
-@app.post("/api/departments", response_model=schemas.DepartmentResponse)
-def create_department(dept: schemas.DepartmentCreate, db: Session = Depends(get_db)):
-    new_dept = models.Department(
-        name=dept.name,
-        head=dept.head,
-        parent_dept=dept.parent_dept,
-        status=dept.status
-    )
-    db.add(new_dept)
-    db.commit()
-    db.refresh(new_dept)
-    return new_dept
 @app.post("/api/assets")
-def register_asset(asset: schemas.AssetCreate, db: Session = Depends(get_db)):
-    # Database me naya asset create karna (Default status: Available)
+def create_asset(asset: AssetCreate, db: Session = Depends(get_db)):
+    existing_asset = db.query(models.Asset).filter(models.Asset.serial_number == asset.serial_number).first()
+    if existing_asset:
+        raise HTTPException(status_code=400, detail="Serial number already registered!")
+
+    asset_count = db.query(models.Asset).count()
+    new_tag = f"AF-{asset_count + 100}" 
+
     new_asset = models.Asset(
-        name=asset.name, 
-        asset_tag=asset.serial_number, # models.py me humne asset_tag banaya tha
-        category=asset.department,     # models.py me humne category banaya tha
+        asset_tag=new_tag,
+        name=asset.name,
+        serial_number=asset.serial_number,
+        department=asset.department,
         status="Available"
     )
     db.add(new_asset)
     db.commit()
-    db.refresh(new_asset)
-    return {"message": "Asset registered successfully!", "asset": new_asset}
-
-@app.get("/api/dashboard")
-def get_dashboard_stats(db: Session = Depends(get_db)):
-    # Database se real-time count nikalna
-    available_count = db.query(models.Asset).filter(models.Asset.status == "Available").count()
-    allocated_count = db.query(models.Asset).filter(models.Asset.status == "Allocated").count()
     
-    return {
-        "available": available_count,
-        "allocated": allocated_count,
-        "overdue": 0,
-        "active_bookings": 0,
-        "pending_transfers": 0,
-        "upcoming_returns": 0
-    }
-@app.get("/api/assets")
-def get_all_assets(db: Session = Depends(get_db)):
-    # Database se saare assets nikalna
-    assets = db.query(models.Asset).all()
-    return assets
-@app.post("/api/transfers")
-def request_transfer(transfer: schemas.TransferCreate, db: Session = Depends(get_db)):
-    # 1. Database mein asset ko uske tag (jaise AF-0114) se dhundho
-    db_asset = db.query(models.Asset).filter(models.Asset.asset_tag == transfer.asset_tag).first()
-    
-    # 2. Agar asset na mile toh error do
-    if not db_asset:
-        raise HTTPException(status_code=404, detail="Asset database mein nahi mila")
-    
-    # 3. Asset ka status update karo
-    db_asset.status = "Allocated"
-    # (Agar models.py mein 'assigned_to' column hai, toh: db_asset.assigned_to = transfer.to_employee)
-    
-    # 4. Changes save karo
-    db.commit()
-    
-    return {"message": f"Transfer successful! Asset allocated to {transfer.to_employee}"}
-@app.post("/api/maintenance")
-def create_maintenance_ticket(ticket: schemas.TicketCreate, db: Session = Depends(get_db)):
-    # Yahan sirf ticket.asset_tag use karna hai
-    db_asset = db.query(models.Asset).filter(models.Asset.asset_tag == ticket.asset_tag).first()
-    
-    if not db_asset:
-        raise HTTPException(status_code=404, detail="Asset database mein nahi mila")
-    
-    new_ticket = models.MaintenanceTicket(
-        asset_tag=ticket.asset_tag, # Yahan confirm kiya
-        description=ticket.description,
-        status="Pending"
-    )
-    db.add(new_ticket)
-    db_asset.status = "Maintenance"
-    db.commit()
-    return {"message": "Maintenance ticket created"}
-
-@app.get("/api/maintenance/tickets")
-def get_maintenance_tickets(db: Session = Depends(get_db)):
-    tickets = db.query(models.MaintenanceTicket).all()
-    result = []
-    for t in tickets:
-        result.append({
-            "asset_id": t.asset_tag, # Frontend yahi field dhund raha hai
-            "description": t.description,
-            "status": t.status
-        })
-    return result
-# --- ALLOCATION API (With Double-Allocation Block) ---
-@app.post("/api/allocations")
-def allocate_asset(alloc: schemas.AllocationCreate, db: Session = Depends(get_db)):
-    # 1. Check if asset exists and is Available
-    asset = db.query(models.Asset).filter(models.Asset.name == alloc.asset_name).first()
-    
-    if not asset:
-        raise HTTPException(status_code=404, detail="Asset not found")
-    
-    if asset.status == "Allocated":
-        # DOUBLE ALLOCATION BLOCK LOGIC
-        raise HTTPException(status_code=400, detail=f"Blocked: Already allocated. Submit a transfer request.")
-    
-    # 2. Allocate and update asset status
-    new_alloc = models.Allocation(asset_name=alloc.asset_name, assigned_to=alloc.assigned_to)
-    asset.status = "Allocated"  # Update original asset
-    
-    # 3. Log Activity
-    log_entry = models.ActivityLog(description=f"Asset {asset.name} allocated to {alloc.assigned_to}")
-    
-    db.add(new_alloc)
-    db.add(log_entry)
-    db.commit()
-    return {"status": "success", "message": "Asset allocated successfully"}
-
-# --- BOOKING API (With Time Overlap Validation) ---
-@app.post("/api/bookings")
-def book_resource(booking: schemas.BookingCreate, db: Session = Depends(get_db)):
-    # OVERLAP VALIDATION LOGIC
-    overlapping = db.query(models.Booking).filter(
-        models.Booking.resource_name == booking.resource_name,
-        models.Booking.start_time < booking.end_time,
-        models.Booking.end_time > booking.start_time
-    ).first()
-
-    if overlapping:
-        raise HTTPException(status_code=400, detail="Conflict: Slot is already booked for this time.")
-
-    new_booking = models.Booking(
-        resource_name=booking.resource_name,
-        start_time=booking.start_time,
-        end_time=booking.end_time,
-        booked_by=booking.booked_by
-    )
-    
-    log_entry = models.ActivityLog(description=f"{booking.resource_name} booked by {booking.booked_by}")
-    
-    db.add(new_booking)
-    db.add(log_entry)
-    db.commit()
-    return {"status": "success", "message": "Resource booked successfully"}
-# --- AUDIT API ---
-@app.post("/api/audit/cycle")
-def create_audit(name: str, db: Session = Depends(get_db)):
-    cycle = models.AuditCycle(name=name)
-    db.add(cycle)
-    db.commit()
-    return {"message": "Audit cycle started"}
-
-@app.post("/api/audit/verify")
-def verify_asset(asset_id: int, status: str, db: Session = Depends(get_db)):
-    # Yahan logic hai ki auditor Verified/Missing/Damaged kya mark kar raha hai
-    asset = db.query(models.Asset).filter(models.Asset.id == asset_id).first()
-    if asset:
-        asset.status = status # Auto-update status
-        db.commit()
-    return {"message": "Asset status updated for audit"}
+    return {"message": "Asset successfully created!"}
