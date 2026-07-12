@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AssetFlow Test</title>
+</head>
+<body>
+    <h1>AssetFlow API Test</h1>
+    <h2 id="result" style="color: blue;">Loading...</h2>
+
+    <script>
+        fetch('http://127.0.0.1:8000/')
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('result').innerText = data.message;
+                document.getElementById('result').style.color = "green";
+            })
+            .catch(error => {
+                document.getElementById('result').innerText = "Backend se connect nahi ho paya!";
+                document.getElementById('result').style.color = "red";
+                console.error('Error:', error);
+            });
+    </script>
+</body>
+</html>
