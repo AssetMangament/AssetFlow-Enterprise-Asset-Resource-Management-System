@@ -52,3 +52,21 @@ def signup(user: schemas.UserCreate, db: Session = Depends(get_db)):
     db.refresh(new_user)
     
     return new_user
+@app.get("/api/dashboard")
+def get_dashboard_stats(db: Session = Depends(get_db)):
+    # Database se real-time count nikalna
+    available_count = db.query(models.Asset).filter(models.Asset.status == "Available").count()
+    allocated_count = db.query(models.Asset).filter(models.Asset.status == "Allocated").count()
+    
+    # Baaki metrics abhi 0 bhej rahe hain, jab unke tables banenge tab inko bhi dynamic kar denge
+    return {
+        "available": available_count,
+        "allocated": allocated_count,
+        "overdue": 0,
+        "active_bookings": 0,
+        "pending_transfers": 0,
+        "upcoming_returns": 0
+    }
+@app.get("/")
+def read_root():
+    return {"status": "success", "message": "AssetFlow API is working!"}

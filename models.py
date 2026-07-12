@@ -25,3 +25,11 @@ class User(Base):
     department_id = Column(Integer, ForeignKey("departments.id"), nullable=True)
     
     department = relationship("Department", back_populates="users")
+class Asset(Base):
+    __tablename__ = "assets"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    asset_tag = Column(String, unique=True, index=True, nullable=False)
+    name = Column(String, nullable=False)
+    category = Column(String, nullable=False)
+    status = Column(String, default="Available") # Statuses: Available, Allocated, Under Maintenance, etc.

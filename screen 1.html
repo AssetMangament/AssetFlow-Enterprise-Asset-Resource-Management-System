@@ -187,7 +187,7 @@
       </div>
 
       <!-- Login Form -->
-      <form>
+      <form id="signupForm">
         <div class="form-group">
           <label for="email">Email</label>
           <input type="email" id="email" placeholder="name@company.com" required>
@@ -215,66 +215,64 @@
     </div>
   </div>
 <script>
-    // Backend API URL
-    const API_URL = "http://127.0.0.1:8000";
+  // Backend API URL
+  const API_URL = "http://127.0.0.1:8000";
 
-    // Form aur inputs ko select karna
-    const form = document.querySelector("form");
-    const emailInput = document.getElementById("email");
-    const passwordInput = document.getElementById("password");
-    const submitBtn = document.querySelector(".btn-submit");
+  // Elements select karna
+  const form = document.getElementById("signupForm");
+  const emailInput = document.getElementById("email");
+  const passwordInput = document.getElementById("password");
+  const submitBtn = document.querySelector(".btn-submit");
 
-    // Button click hone par kya hoga
-    form.addEventListener("submit", async (e) => {
-      e.preventDefault(); // Page reload rokne ke liye
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault(); // Page reload rokne ke liye
 
-      const emailValue = emailInput.value;
-      const passwordValue = passwordInput.value;
-      
-      // Smart Trick: Email se name extract karna (e.g., 'rohan@odoo.com' -> 'rohan')
-      const nameValue = emailValue.split('@')[0];
+    const emailValue = emailInput.value;
+    const passwordValue = passwordInput.value;
+    
+    // Email se name extract karna
+    const nameValue = emailValue.split('@')[0];
 
-      // Backend ko bhejne ke liye data pack karna
-      const userData = {
-        name: nameValue,
-        email: emailValue,
-        password: passwordValue
-      };
+    const userData = {
+      name: nameValue,
+      email: emailValue,
+      password: passwordValue
+    };
 
-      try {
-        // Button ka text change karke loading dikhana
-        submitBtn.innerText = "Creating Account...";
-        submitBtn.style.opacity = "0.7";
+    try {
+      submitBtn.innerText = "Creating Account...";
+      submitBtn.style.opacity = "0.7";
 
-        // FastAPI backend ko POST request bhejna
-        const response = await fetch(`${API_URL}/api/signup`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify(userData)
-        });
+      const response = await fetch(`${API_URL}/api/signup`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(userData)
+      });
 
-        const result = await response.json();
+      const result = await response.json();
 
-        // Agar account ban gaya
-        if (response.ok) {
-          alert("Account created successfully! Welcome " + result.name + " (Role: " + result.role + ")");
-          // Future me yahan se Dashboard par redirect karenge:
-          // window.location.href = "dashboard.html"; 
+      if (response.ok) {
+        alert("Account created successfully! Welcome " + result.name);
+        // Redirect to Screen 2
+        window.location.href = "screen2.html"; 
+      } else {
+        // Agar FastAPI error deta hai (422 ya 400)
+        if (result.detail && Array.isArray(result.detail)) {
+          alert("Input Error: " + result.detail[0].msg);
         } else {
-          // Agar email already exist karti hai
-          alert("Error: " + result.detail);
+          alert("Error: " + (result.detail || "Something went wrong"));
         }
-      } catch (error) {
-        console.error("Fetch error:", error);
-        alert("Backend server se connect nahi ho paya. Kya FastAPI chal raha hai?");
-      } finally {
-        // Button ko wapas normal karna
-        submitBtn.innerText = "Create Account";
-        submitBtn.style.opacity = "1";
       }
-    });
-  </script>
+    } catch (error) {
+      console.error("Fetch error:", error);
+      alert("Backend server se connect nahi ho paya. Kya FastAPI chal raha hai?");
+    } finally {
+      submitBtn.innerText = "Create Account";
+      submitBtn.style.opacity = "1";
+    }
+  });
+</script>
 </body>
 </html>
