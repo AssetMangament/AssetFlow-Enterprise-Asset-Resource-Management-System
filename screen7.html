@@ -147,20 +147,18 @@
 <body>
 
   <aside class="sidebar">
-    <div class="sidebar-header">
-      AssetFlow
-    </div>
-   <ul class="nav-links">
+    <div class="sidebar-header">AssetFlow</div>
     <ul class="nav-links">
       <li><a href="screen2.html">Dashboard</a></li>
       <li><a href="screen 3.html">Organization setup</a></li>
       <li><a href="screen 4.html">Assets</a></li>
       <li><a href="screen 5.html">Allocation & Transfer</a></li>
       <li><a href="screen 6.html">Resource Booking</a></li>
-      <li><a href="screen7.html">Maintenance</a></li>
+      <li><a href="screen7.html" class="active">Maintenance</a></li>
       <li><a href="screen8.html">Audit</a></li>
       <li><a href="screen9.html">Reports</a></li>
-      <li><a href="screen 10.html">Notifications</a></li> </ul>
+      <li><a href="screen 10.html">Notifications</a></li>
+    </ul>
   </aside>
 
   <main class="main-content">   
@@ -209,7 +207,6 @@
       const response = await fetch(`${API_URL}/api/maintenance/tickets`);
       const tickets = await response.json();
 
-      // Counters monitor karne ke liye object
       const counts = { 
         "Pending": 0, 
         "Approved": 0, 
@@ -220,7 +217,7 @@
 
       // Backend se aaye har ticket ko process karna
       tickets.forEach(ticket => {
-        // Spaces hatana taaki ID sahi match ho (e.g., "In Progress" -> "InProgress")
+        // Spaces hatana taaki ID sahi match ho
         const safeStatus = ticket.status.replace(/\s+/g, '');
         const column = document.getElementById(`col-${safeStatus}`);
 
@@ -229,15 +226,12 @@
             counts[ticket.status]++;
           }
           
-          // Dynamic card banana
+          // YAHAN CHANGE KIYA HAI: ticket.asset_id ki jagah ticket.asset_tag
           const card = document.createElement("div");
           card.className = "kanban-card";
-          if (ticket.status === "Resolved") {
-             card.style.borderLeft = "4px solid #10b981"; // Green indicator
-          }
           
           card.innerHTML = `
-            <span class="asset-id">${ticket.asset_id}</span>
+            <span class="asset-id">${ticket.asset_id || ticket.asset_tag}</span>
             <p class="issue-desc">${ticket.description}</p>
           `;
           
@@ -245,7 +239,6 @@
         }
       });
 
-      // UI ke counters ko badalna
       document.getElementById("count-Pending").innerText = counts["Pending"];
       document.getElementById("count-Approved").innerText = counts["Approved"];
       document.getElementById("count-TechnicianAssigned").innerText = counts["Technician Assigned"];
@@ -253,11 +246,10 @@
       document.getElementById("count-Resolved").innerText = counts["Resolved"];
 
     } catch (error) {
-      console.error("Error fetching tickets:", error);
+      console.error("Error fetching tickets. Make sure FastAPI is returning maintenance data.", error);
     }
   }
 
-  // Page load par execute karein
   window.onload = fetchAndRenderTickets;
   </script>
 </body>

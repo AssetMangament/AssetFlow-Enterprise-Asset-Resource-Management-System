@@ -259,17 +259,19 @@
       <button class="btn" id="btn-requests" onclick="toggleCategory('requests')">Raise request</button>
     </div>
 
-    <div id="section-register" class="category-section">
+  <div id="section-register" class="category-section">
       <h3>Register a New Asset</h3>
       <div class="simple-form">
-        <input type="text" placeholder="Asset Name (e.g. Dell Monitor)">
-        <input type="text" placeholder="Serial Number">
-        <select>
-          <option>Select Department</option>
-          <option>IT</option>
-          <option>HR</option>
+        <!-- IDs add ki gayi hain yahan -->
+        <input type="text" id="asset-name" placeholder="Asset Name (e.g. Dell Monitor)">
+        <input type="text" id="asset-serial" placeholder="Serial Number">
+        <select id="asset-dept">
+          <option value="">Select Department</option>
+          <option value="IT">IT</option>
+          <option value="HR">HR</option>
         </select>
-        <button>Save Asset</button>
+        <!-- onclick function add kiya hai -->
+        <button onclick="registerNewAsset()">Save Asset</button>
       </div>
     </div>
 
@@ -330,6 +332,69 @@
         document.getElementById('btn-requests').classList.add('active-tab');
       }
     }
+    const API_URL = "http://127.0.0.1:8000";
+
+    // 1. Naya Asset Register karne ka function
+    async function registerNewAsset() {
+      const name = document.getElementById('asset-name').value;
+      const serial = document.getElementById('asset-serial').value;
+      const dept = document.getElementById('asset-dept').value;
+
+      if (!name || !serial || !dept) {
+        alert("Please fill all fields!");
+        return;
+      }
+
+      const assetData = {
+        name: name,
+        serial_number: serial,
+        department: dept
+      };
+
+      try {
+        const response = await fetch(`${API_URL}/api/assets`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(assetData)
+        });
+
+        if (response.ok) {
+          alert("Asset Added to Database Successfully!");
+          // Form clear karna
+          document.getElementById('asset-name').value = '';
+          document.getElementById('asset-serial').value = '';
+          document.getElementById('asset-dept').value = '';
+          
+          // Dashboard ke numbers turant update karna
+          loadDashboardStats();
+        } else {
+          alert("Error adding asset. Serial number might be duplicate.");
+        }
+      } catch (error) {
+        console.error("Error:", error);
+      }
+    }
+
+    // 2. Dashboard Stats Load karne ka function
+    async function loadDashboardStats() {
+      try {
+        const response = await fetch(`${API_URL}/api/dashboard`);
+        const data = await response.json();
+
+        // IDs dhundh kar numbers update karna
+        if(document.getElementById('val-available')) {
+            document.getElementById('val-available').innerText = data.available;
+        }
+        if(document.getElementById('val-allocated')) {
+            document.getElementById('val-allocated').innerText = data.allocated;
+        }
+      } catch (error) {
+        console.error("Dashboard error:", error);
+      }
+    }
+
+    // Jab page pehli baar khule, toh stats fetch kar lo
+    window.onload = loadDashboardStats;
   </script>
 </body>
 </html>

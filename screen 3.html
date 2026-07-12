@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AssetFlow - Organization Setup</title>
+  <title>AssetFlow - Organization Setup Directory</title>
   <style>
     /* Global Reset & Typography */
     * {
@@ -14,17 +14,17 @@
     }
 
     body {
-      background-color: screen10.htmlf1f5f9; /* Soft off-white background matching your dashboard */
-      color: screen10.html1e293b;
+      background-color: #f1f5f9; 
+      color: #1e293b;
       display: flex;
       min-height: 100vh;
     }
 
-    /* Sidebar Layout - Matching your Dashboard exactly */
+    /* Sidebar Layout */
     .sidebar {
       width: 260px;
-      background-color: screen10.html0f172a; 
-      color: screen10.htmlffffff;
+      background-color: #0f172a; 
+      color: #ffffff;
       display: flex;
       flex-direction: column;
       flex-shrink: 0;
@@ -35,7 +35,7 @@
       font-size: 1.25rem;
       font-weight: 700;
       letter-spacing: 0.5px;
-      border-bottom: 1px solid screen10.html1e293b;
+      border-bottom: 1px solid #1e293b;
     }
 
     .nav-links {
@@ -50,7 +50,7 @@
     .nav-links a {
       display: block;
       padding: 12px 16px;
-      color: screen10.html94a3b8;
+      color: #94a3b8;
       text-decoration: none;
       border-radius: 8px;
       font-size: 0.95rem;
@@ -59,33 +59,33 @@
     }
 
     .nav-links a:hover {
-      background-color: screen10.html1e293b;
-      color: screen10.htmlffffff;
+      background-color: #1e293b;
+      color: #ffffff;
     }
 
-    /* Active State for Organization Setup */
+    /* Active Left Navigation Focus Box */
     .nav-links a.active {
-      background-color: screen10.html1e293b; 
-      color: screen10.html38bdf8;         
-      border: 1px solid screen10.html38bdf8; 
+      background-color: #1e293b;
+      color: #38bdf8;            
+      border: 1px solid #38bdf8; 
       font-weight: 600;
     }
 
-    /* Main Content Area */
+    /* Main Configuration Canvas Window */
     .main-content {
       flex-grow: 1;
       padding: 40px;
       overflow-y: auto;
-      background-color: screen10.htmlffffff; /* Clean white canvas background */
+      background-color: #ffffff; 
     }
 
     .section-meta {
       font-size: 0.9rem;
-      color: screen10.html64748b;
+      color: #64748b;
       margin-bottom: 16px;
     }
 
-    /* Action Tab Bar Header row */
+    /* Sub-Tab Top Context Control Row */
     .top-action-bar {
       display: flex;
       justify-content: space-between;
@@ -100,10 +100,10 @@
 
     .tab-btn {
       padding: 10px 20px;
-      background-color: screen10.htmlffffff;
-      border: 1px solid screen10.htmlcbd5e1;
+      background-color: #ffffff;
+      border: 1px solid #cbd5e1;
       border-radius: 8px;
-      color: screen10.html475569;
+      color: #475569;
       font-size: 0.95rem;
       font-weight: 500;
       cursor: pointer;
@@ -111,38 +111,46 @@
     }
 
     .tab-btn:hover {
-      background-color: screen10.htmlf8fafc;
-      border-color: screen10.html94a3b8;
+      background-color: #f8fafc;
+      border-color: #94a3b8;
     }
 
-    /* Active Department Tab Accent Style */
     .tab-btn.active {
-      background-color: screen10.htmlf0fdf4; 
-      border-color: screen10.html86efac;
-      color: screen10.html166534;
+      background-color: #f0fdf4; 
+      border-color: #86efac;
+      color: #166534;
     }
 
-    /* Primary CTA + Add Button styled with Dashboard Navy */
-    .btn-primary-add {
+    /* Primary Add CTA Action Button component */
+    .btn-add {
       padding: 10px 24px;
-      background-color: screen10.html0f172a; 
-      border: 1px solid screen10.html0f172a;
+      background-color: #0f172a; 
+      border: 1px solid #0f172a;
       border-radius: 8px;
-      color: screen10.htmlffffff;
+      color: #ffffff;
       font-size: 0.95rem;
       font-weight: 600;
       cursor: pointer;
       transition: all 0.2s ease;
     }
 
-    .btn-primary-add:hover {
-      background-color: screen10.html1e293b;
-      border-color: screen10.html1e293b;
+    .btn-add:hover {
+      background-color: #1e293b;
+      border-color: #1e293b;
     }
 
-    /* Content Data Table Design Structure */
+    /* Modular Interface Containers Control rules */
+    .interface-view {
+      display: none; 
+    }
+
+    .interface-view.active-view {
+      display: block;
+    }
+
+    /* Tabular System Grid Core Blocks */
     .table-container {
-      border: 1px solid screen10.htmle2e8f0;
+      border: 1px solid #e2e8f0;
       border-radius: 12px;
       overflow: hidden;
       margin-bottom: 32px;
@@ -157,24 +165,24 @@
     }
 
     .org-table th {
-      background-color: screen10.htmlf8fafc; 
-      color: screen10.html0f172a;
+      background-color: #f8fafc; 
+      color: #0f172a;
       font-weight: 600;
       padding: 16px 20px;
-      border-bottom: 1px solid screen10.htmle2e8f0;
+      border-bottom: 1px solid #e2e8f0;
     }
 
     .org-table td {
       padding: 16px 20px;
-      border-bottom: 1px solid screen10.htmle2e8f0;
-      color: screen10.html475569;
+      border-bottom: 1px solid #e2e8f0;
+      color: #475569;
     }
 
     .org-table tr:last-child td {
       border-bottom: none;
     }
 
-    /* Badge Indicators for Table Status Columns */
+    /* Status Badges Config elements */
     .status-badge {
       display: inline-block;
       padding: 6px 18px;
@@ -186,104 +194,187 @@
     }
 
     .status-badge.active {
-      background-color: screen10.html0f172a;
-      color: screen10.htmlffffff;
+      background-color: #0f172a; 
+      color: #ffffff;
     }
 
     .status-badge.inactive {
-      background-color: screen10.html64748b; 
-      color: screen10.htmlffffff;
+      background-color: #64748b; 
+      color: #ffffff;
     }
 
-    /* Section Horizontal Rule styling */
     .divider {
       border: 0;
       height: 1px;
-      background-color: screen10.htmle2e8f0;
+      background-color: #e2e8f0;
       margin-bottom: 24px;
     }
 
-    /* Systems Footnote instructions element */
     .explanatory-text {
       font-size: 0.95rem;
-      color: screen10.html475569;
+      color: #475569;
       line-height: 1.6;
     }
   </style>
 </head>
 <body>
 
-  <!-- Left Global Navigation Sidebar Component -->
+  <!-- Left Global Sidebar -->
   <aside class="sidebar">
-    <div class="sidebar-header">
-      AssetFlow
-    </div>
-  <ul class="nav-links">
+    <div class="sidebar-header">AssetFlow</div>
+    <ul class="nav-links">
       <li><a href="screen2.html">Dashboard</a></li>
-      <li><a href="screen 3.html">Organization setup</a></li>
+      <li><a href="screen 3.html" class="active">Organization setup</a></li>
       <li><a href="screen 4.html">Assets</a></li>
       <li><a href="screen 5.html">Allocation & Transfer</a></li>
       <li><a href="screen 6.html">Resource Booking</a></li>
       <li><a href="screen7.html">Maintenance</a></li>
       <li><a href="screen8.html">Audit</a></li>
       <li><a href="screen9.html">Reports</a></li>
-      <li><a href="screen10.html">Notifications</a></li> </ul>
+      <li><a href="screen 10.html">Notifications</a></li> 
+    </ul>
   </aside>
 
-  <!-- Right Dashboard Operational Context Panel -->
+  <!-- Right Dashboard Content -->
   <main class="main-content">
     <div class="section-meta">Screen 3 Organization setup (Admin only)</div>
 
-    <!-- Active Filter/Tab & CTA Actions Context Panel Row -->
+    <!-- Active Navigation Tab Row Block -->
     <div class="top-action-bar">
       <div class="tabs-group">
-        <button class="tab-btn active"><b>Departments</b></button>
-        <button class="tab-btn"><b>Categories</b></button>
-        <button class="tab-btn"><b>Employee</b></button>
+        <button class="tab-btn active" onclick="toggleSetupView('dept-view', this, '+ Add Department')">Departments</button>
+        <button class="tab-btn" onclick="toggleSetupView('cat-view', this, '+ Add Category')">Categories</button>
+        <button class="tab-btn" onclick="toggleSetupView('emp-view', this, '+ Add Employee')">Employee</button>
       </div>
-      <button class="btn-primary-add">+ Add</button>
+      <button id="dynamic-add-btn" class="btn-add">+ Add Department</button>
     </div>
 
-    <!-- Structured System Records Data Grid Grid Component -->
-    <div class="table-container">
-      <table class="org-table">
-        <thead>
-          <tr>
-            <th>Department</th>
-            <th>Head</th>
-            <th>Parent Dept</th>
-            <th>Status</th>
-          </tr>
-        </thead>
-        <tbody id="dept-table-body">
-          <tr><td colspan="4" style="text-align: center;">Loading departments...</td></tr>
-        </tbody>
-      </table>
+    <!-- 1. DEPARTMENTS PANEL (Dynamic from Database) -->
+    <div id="dept-view" class="interface-view active-view">
+      <div class="table-container">
+        <table class="org-table">
+          <thead>
+            <tr>
+              <th>Department</th>
+              <th>Head</th>
+              <th>Parent Dept</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="dept-table-body">
+            <tr><td colspan="4" style="text-align: center;">Loading departments from database...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- 2. CATEGORIES PANEL (Static Placeholder) -->
+    <div id="cat-view" class="interface-view">
+      <div class="table-container">
+        <table class="org-table">
+          <thead>
+            <tr>
+              <th>Category Title</th>
+              <th>Asset Classification Code</th>
+              <th>Assigned Custodian</th>
+              <th>Status Mapping</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Computing Devices</td>
+              <td>CAT-ELEC-01</td>
+              <td>Aditi Rao</td>
+              <td><span class="status-badge active">Active</span></td>
+            </tr>
+            <tr>
+              <td>Office Infrastructure</td>
+              <td>CAT-FURN-02</td>
+              <td>Rohan Mehta</td>
+              <td><span class="status-badge active">Active</span></td>
+            </tr>
+            <tr>
+              <td>Media Systems</td>
+              <td>CAT-AV-03</td>
+              <td>Sana Iqbal</td>
+              <td><span class="status-badge active">Active</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- 3. EMPLOYEE PANEL (Static Placeholder) -->
+    <div id="emp-view" class="interface-view">
+      <div class="table-container">
+        <table class="org-table">
+          <thead>
+            <tr>
+              <th>Employee Name</th>
+              <th>Email Address</th>
+              <th>Primary Department</th>
+              <th>Account Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Priya Shah</td>
+              <td>priya.shah@assetflow.com</td>
+              <td>Engineering</td>
+              <td><span class="status-badge active">Active</span></td>
+            </tr>
+            <tr>
+              <td>Arjun Nair</td>
+              <td>arjun.nair@assetflow.com</td>
+              <td>Field Ops</td>
+              <td><span class="status-badge active">Active</span></td>
+            </tr>
+            <tr>
+              <td>Karan Malhotra</td>
+              <td>k.malhotra@assetflow.com</td>
+              <td>Facilities</td>
+              <td><span class="status-badge inactive">Inactive</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
 
     <hr class="divider">
 
-    <!-- Bottom Advisory Workflow Instructions Footnote -->
     <div class="explanatory-text">
       Editing a department here also drives the picklist in Screen 4 & 5
     </div>
   </main>
-<script>
+
+  <script>
     const API_URL = "http://127.0.0.1:8000";
 
-    // 1. Data load karne ka function
+    // Tab Switching Logic
+    function toggleSetupView(targetViewId, element, buttonTextLabel) {
+      const views = document.querySelectorAll('.interface-view');
+      views.forEach(view => view.classList.remove('active-view'));
+
+      const buttons = document.querySelectorAll('.tab-btn');
+      buttons.forEach(btn => btn.classList.remove('active'));
+
+      document.getElementById(targetViewId).classList.add('active-view');
+      element.classList.add('active');
+
+      document.getElementById('dynamic-add-btn').innerText = buttonTextLabel;
+    }
+
+    // Dynamic Database Fetch for Departments
     async function loadDepartments() {
       const tbody = document.getElementById("dept-table-body");
       try {
         const response = await fetch(`${API_URL}/api/departments`);
         const departments = await response.json();
 
-        tbody.innerHTML = ""; // Loading text clear karna
+        tbody.innerHTML = ""; 
 
         departments.forEach(dept => {
           const tr = document.createElement("tr");
-          
-          // Badge color logic
           const badgeClass = dept.status.toLowerCase() === "active" ? "status-badge active" : "status-badge inactive";
 
           tr.innerHTML = `
@@ -297,45 +388,50 @@
 
       } catch (error) {
         console.error("Error loading departments:", error);
-        tbody.innerHTML = `<tr><td colspan="4">Error loading data. Server on hai?</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: red;">No database records found. Add a department first!</td></tr>`;
       }
     }
 
-    // 2. Add Button ka function (Simple JS Prompt hackathon demo ke liye)
-    document.querySelector(".btn-primary-add").addEventListener("click", async () => {
-      const deptName = prompt("Enter Department Name:");
-      if (!deptName) return;
+    // Dynamic Add Button Logic
+    document.getElementById("dynamic-add-btn").addEventListener("click", async () => {
+      const btnText = document.getElementById("dynamic-add-btn").innerText;
       
-      const headName = prompt("Enter Department Head Name:");
-      const statusInput = prompt("Enter Status (Active/Inactive):", "Active");
+      if (btnText === "+ Add Department") {
+        const deptName = prompt("Enter Department Name:");
+        if (!deptName) return;
+        
+        const headName = prompt("Enter Department Head Name:");
+        const statusInput = prompt("Enter Status (Active/Inactive):", "Active");
 
-      const newDeptData = {
-        name: deptName,
-        head: headName || "N/A",
-        parent_dept: "--",
-        status: statusInput || "Active"
-      };
+        const newDeptData = {
+          name: deptName,
+          head: headName || "N/A",
+          parent_dept: "--",
+          status: statusInput || "Active"
+        };
 
-      try {
-        const response = await fetch(`${API_URL}/api/departments`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(newDeptData)
-        });
+        try {
+          const response = await fetch(`${API_URL}/api/departments`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(newDeptData)
+          });
 
-        if (response.ok) {
-          alert("Department added successfully!");
-          loadDepartments(); // Table ko turant refresh karna
-        } else {
-          alert("Failed to add department.");
+          if (response.ok) {
+            alert("Department added successfully!");
+            loadDepartments(); 
+          } else {
+            alert("Failed to add department.");
+          }
+        } catch (error) {
+          console.error("Error:", error);
+          alert("Server error. Is FastAPI running?");
         }
-      } catch (error) {
-        console.error("Error:", error);
-        alert("Server error.");
+      } else {
+        alert("Backend API for " + btnText + " will be added later!");
       }
     });
 
-    // Page start hote hi data load karna
     window.onload = loadDepartments;
   </script>
 </body>

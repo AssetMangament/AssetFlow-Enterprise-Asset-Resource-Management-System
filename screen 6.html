@@ -14,16 +14,16 @@
     }
 
     body {
-      background-color: #f1f5f9; /* Design token canvas grey background */
+      background-color: #f1f5f9; 
       color: #1e293b;
       display: flex;
       min-height: 100vh;
     }
 
-    /* Sidebar Layout - Persistent Navigation branding */
+    /* Sidebar Layout */
     .sidebar {
       width: 260px;
-      background-color: #0f172a; /* Core deep corporate navy */
+      background-color: #0f172a; 
       color: #ffffff;
       display: flex;
       flex-direction: column;
@@ -63,20 +63,19 @@
       color: #ffffff;
     }
 
-    /* Active State updated for the Resource Booking link module frame */
     .nav-links a.active {
       background-color: #1e293b;
-      color: #38bdf8;            /* Bright signature branding blue */
-      border: 1px solid #38bdf8; /* Outlined focus active border container indicator */
+      color: #38bdf8;            
+      border: 1px solid #38bdf8; 
       font-weight: 600;
     }
 
-    /* Main Operational Workspace Canvas */
+    /* Main Operational Workspace */
     .main-content {
       flex-grow: 1;
       padding: 40px;
       overflow-y: auto;
-      background-color: #ffffff; /* Clean unified white workspace canvas */
+      background-color: #ffffff; 
     }
 
     .section-meta {
@@ -85,7 +84,7 @@
       margin-bottom: 24px;
     }
 
-    /* Primary Asset Input Selector Focus Block */
+    /* Primary Asset Input Selector */
     .form-group {
       margin-bottom: 32px;
       max-width: 700px;
@@ -111,7 +110,7 @@
       font-weight: 500;
     }
 
-    /* Timeline Matrix Structural Architecture Container */
+    /* Timeline Matrix Structural Architecture */
     .timeline-container {
       max-width: 700px;
       margin-bottom: 32px;
@@ -121,7 +120,6 @@
       position: relative;
     }
 
-    /* Base Timeline Slot Entry Point Rows */
     .time-row {
       display: flex;
       min-height: 54px;
@@ -147,7 +145,7 @@
       border-bottom: 1px dashed #e2e8f0;
     }
 
-    /* Absolute Overlay Scheduler Cards Components */
+    /* Absolute Overlay Scheduler Cards */
     .booking-card {
       position: absolute;
       left: 65px;
@@ -159,30 +157,28 @@
       z-index: 2;
     }
 
-    /* Confirmed State Booking Blocks Layout */
     .booking-card.confirmed {
       top: 4px;
-      height: 48px; /* Spans 9:00 to 10:00 precisely */
-      background-color: #0f172a; /* Brand palette deep navy corporate theme fill */
+      height: 48px; 
+      background-color: #0f172a; 
       color: #ffffff;
-      border-left: 4px solid #38bdf8; /* Brand highlight token accent edge */
+      border-left: 4px solid #38bdf8; 
       box-shadow: 0 4px 6px -1px rgba(15, 23, 42, 0.08);
     }
 
-    /* Conflict Block Exception State Overlay Indicator */
     .booking-card.conflict {
-      top: 32px;    /* Off-set start representing half-past hour (9:30) */
-      height: 52px; /* Stretches past 10:00 marker down to 10:30 marker */
-      background-color: #fff1f2; /* Soft mismatch alerting tone fill block */
-      border: 1px dashed #ef4444; /* Bright danger error border stroke line */
+      top: 32px;    
+      height: 52px; 
+      background-color: #fff1f2; 
+      border: 1px dashed #ef4444; 
       color: #991b1b;
-      z-index: 3; /* Render layered slightly over the baseline card to show clash */
+      z-index: 3; 
     }
 
-    /* Core Operational Action Interaction Point */
+    /* Core Operational Action Point */
     .btn-book {
       padding: 12px 28px;
-      background-color: #0f172a; /* Brand consistent navy action point */
+      background-color: #0f172a; 
       border: 1px solid #0f172a;
       border-radius: 8px;
       color: #ffffff;
@@ -202,16 +198,13 @@
 
   <!-- Left Global Sidebar Navigation Panel -->
   <aside class="sidebar">
-    <div class="sidebar-header">
-      AssetFlow
-    </div>
+    <div class="sidebar-header">AssetFlow</div>
     <ul class="nav-links">
-     <ul class="nav-links">
       <li><a href="screen2.html">Dashboard</a></li>
       <li><a href="screen 3.html">Organization setup</a></li>
       <li><a href="screen 4.html">Assets</a></li>
       <li><a href="screen 5.html">Allocation & Transfer</a></li>
-      <li><a href="screen 6.html">Resource Booking</a></li>
+      <li><a href="screen 6.html" class="active">Resource Booking</a></li>
       <li><a href="screen7.html">Maintenance</a></li>
       <li><a href="screen8.html">Audit</a></li>
       <li><a href="screen9.html">Reports</a></li>
@@ -219,57 +212,66 @@
     </ul>
   </aside>
 
-  <!-- Right Primary Control Context Window Frame Panel -->
+  <!-- Right Primary Control Context Window -->
   <main class="main-content">
     <div class="section-meta">Screen 6 Resource booking</div>
 
-    <!-- Target Resource Context Input Row -->
-    <div class="form-group">
-      <label class="form-label" for="resource-select">Resource</label>
-      <select id="resource-select" class="form-select">
-        <option selected>Conference room B2 - Tue, 7 Jul</option>
-      </select>
-    </div>
-
-    <!-- Core Dynamic Scheduler Calendar Grid Block Matrix -->
-    <div class="timeline-container">
-      
-      <!-- Confirmed Standard Allocation Element Card Component -->
-      <div class="booking-card confirmed">
-        Booked - Procurement Team - 9 to 10
+    <form id="booking-form">
+      <!-- Target Resource Context Input Row -->
+      <div class="form-group">
+        <label class="form-label" for="resource-select">Resource</label>
+        <select id="resource-select" class="form-select">
+          <option selected>Conference room B2 - Tue, 7 Jul</option>
+        </select>
       </div>
 
-      <!-- Live Overlapping Conflict Schedule Validation Alert Box Component -->
-      <div class="booking-card conflict">
-        Requested 9:30 to 10:30 - conflict - slot is unavailable
+      <!-- Core Dynamic Scheduler Calendar Grid Block Matrix -->
+      <div class="timeline-container">
+        
+        <div class="booking-card confirmed">
+          Booked - Procurement Team - 9 to 10
+        </div>
+
+        <div class="booking-card conflict" id="conflict-card" style="display: block;">
+          Requested 9:30 to 10:30 - conflict - slot is unavailable
+        </div>
+
+        <div class="time-row">
+          <div class="time-label">9:00</div>
+          <div class="slot-cell"></div>
+        </div>
+        <div class="time-row">
+          <div class="time-label">10:00</div>
+          <div class="slot-cell"></div>
+        </div>
+        <div class="time-row">
+          <div class="time-label">11:00</div>
+          <div class="slot-cell"></div>
+        </div>
+        <div class="time-row">
+          <div class="time-label">12:00</div>
+          <div class="slot-cell"></div>
+        </div>
+        <div class="time-row">
+          <div class="time-label">1:00</div>
+          <div class="slot-cell"></div>
+        </div>
       </div>
 
-      <!-- Time Interval Track Segments Row Anchors -->
-      <div class="time-row">
-        <div class="time-label">9:00</div>
-        <div class="slot-cell"></div>
-      </div>
-      <div class="time-row">
-        <div class="time-label">10:00</div>
-        <div class="slot-cell"></div>
-      </div>
-      <div class="time-row">
-        <div class="time-label">11:00</div>
-        <div class="slot-cell"></div>
-      </div>
-      <div class="time-row">
-        <div class="time-label">12:00</div>
-        <div class="slot-cell"></div>
-      </div>
-      <div class="time-row">
-        <div class="time-label">1:00</div>
-        <div class="slot-cell"></div>
-      </div>
-    </div>
-
-    <!-- Execution Submit CTA action interaction block -->
-    <button class="btn-book">Book a slot</button>
+      <button type="submit" class="btn-book" id="btn-submit-booking">Book a slot</button>
+    </form>
   </main>
 
+  <script>
+    document.getElementById("booking-form").addEventListener("submit", function(event) {
+      event.preventDefault(); 
+      
+      const resource = document.getElementById("resource-select").value;
+
+      // Hackathon demo logic: Hide the conflict alert and show a success message
+      document.getElementById("conflict-card").style.display = "none";
+      alert("Booking request submitted successfully for " + resource + ".\nPending admin approval.");
+    });
+  </script>
 </body>
 </html>

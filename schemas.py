@@ -1,12 +1,11 @@
 from pydantic import BaseModel, EmailStr
 
-# Frontend se jo data aayega (Signup ke time)
+# --- User Schemas ---
 class UserCreate(BaseModel):
     name: str
-    email: EmailStr  # Ye automatically check karega ki email format sahi hai ya nahi
+    email: EmailStr
     password: str
 
-# Backend se jo data wapas jayega (Password hide karke)
 class UserResponse(BaseModel):
     id: int
     name: str
@@ -15,20 +14,27 @@ class UserResponse(BaseModel):
     is_active: bool
 
     class Config:
-        from_attributes = True # SQLAlchemy models ko Pydantic me convert karne ke liye
+        from_attributes = True
+
 class UserLogin(BaseModel):
     email: str
     password: str
-class TicketCreate(BaseModel):
-    asset_id: str
-    description: str
-    status: str = "Pending"
 
+# --- Maintenance Schemas ---
+class TicketCreate(BaseModel):
+    asset_tag: str
+    description: str
+    # 'status' ko yahan se hatao agar default model mein set hai, 
+    # ya phir yahan optional rakho taaki API confusion na ho.
+    
 class TicketResponse(TicketCreate):
     id: int
+    status: str
 
     class Config:
-        from_attributes = True # ya orm_mode = True
+        from_attributes = True
+
+# --- Organization Schemas ---
 class DepartmentCreate(BaseModel):
     name: str
     head: str
@@ -40,3 +46,14 @@ class DepartmentResponse(DepartmentCreate):
 
     class Config:
         from_attributes = True
+
+# --- Asset Schemas ---
+class AssetCreate(BaseModel):
+    name: str
+    serial_number: str
+    department: str
+
+class TransferCreate(BaseModel):
+    asset_tag: str
+    to_employee: str
+    reason: str

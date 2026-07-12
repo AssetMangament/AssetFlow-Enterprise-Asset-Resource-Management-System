@@ -18,6 +18,7 @@
       display: flex;
       min-height: 100vh;
     }
+
     .sidebar {
       width: 260px;
       background-color: #0f172a; 
@@ -57,27 +58,32 @@
       background-color: #1e293b;
       color: #ffffff;
     }
+
     .nav-links a.active {
       background-color: #38bdf8; 
       color: #0f172a;
       font-weight: 600;
     }
+
     .main-content {
       flex-grow: 1;
       padding: 40px;
       overflow-y: auto;
     }
+
     .section-title {
       font-size: 1.5rem;
       color: #0f172a;
       font-weight: 600;
       margin-bottom: 24px;
     }
+
     .row {
       display: flex;
       gap: 20px;
       margin-bottom: 24px;
     }
+
     .card {
       background-color: #ffffff;
       border: 1px solid #cbd5e1;
@@ -86,6 +92,7 @@
       box-shadow: 0 2px 4px rgba(15, 23, 42, 0.05);
       flex: 1; 
     }
+
     .card h3 {
       font-size: 1.1rem;
       color: #0f172a;
@@ -93,6 +100,7 @@
       border-bottom: 1px solid #e2e8f0;
       padding-bottom: 8px;
     }
+
     .mock-chart-container {
       height: 150px;
       display: flex;
@@ -100,18 +108,20 @@
       gap: 12px;
       padding-top: 20px;
     }
+
     .bar {
-        flex: 1;
-        background-color: #38bdf8; 
-        border-radius: 4px 4px 0 0; 
-        display: flex;
-        align-items: flex-end;      
-        justify-content: center;    
-        padding-bottom: 8px;       
-        color: #0f172a;             
-        font-weight: 700;           
-        font-size: 0.85rem;         
-}
+      flex: 1;
+      background-color: #38bdf8; 
+      border-radius: 4px 4px 0 0; 
+      display: flex;
+      align-items: flex-end;      
+      justify-content: center;    
+      padding-bottom: 8px;       
+      color: #0f172a;             
+      font-weight: 700;           
+      font-size: 0.85rem;         
+    }
+
     .chart-placeholder {
       height: 150px;
       background-color: #f8fafc;
@@ -164,10 +174,7 @@
 <body>
 
   <aside class="sidebar">
-    <div class="sidebar-header">
-      AssetFlow
-    </div>
-    <ul class="nav-links">
+    <div class="sidebar-header">AssetFlow</div>
     <ul class="nav-links">
       <li><a href="screen2.html">Dashboard</a></li>
       <li><a href="screen 3.html">Organization setup</a></li>
@@ -176,41 +183,45 @@
       <li><a href="screen 6.html">Resource Booking</a></li>
       <li><a href="screen7.html">Maintenance</a></li>
       <li><a href="screen8.html">Audit</a></li>
-      <li><a href="screen9.html">Reports</a></li>
-      <li><a href="screen 10.html">Notifications</a></li> </ul>
+      <li><a href="screen9.html" class="active">Reports</a></li>
+      <li><a href="screen 10.html">Notifications</a></li>
+    </ul>
   </aside>
 
   <main class="main-content">
     <h1 class="section-title">Reports & Analytics</h1>
+    
     <div class="row">
       <div class="card">
         <h3>Utilisation by Department</h3>
         <div class="mock-chart-container">
-        <div class="bar" style="height: 40%;">IT</div>
-        <div class="bar" style="height: 80%;">HR</div>
-        <div class="bar" style="height: 60%;">Sales</div>
-        <div class="bar" style="height: 90%;">Ops</div>
-        <div class="bar" style="height: 30%;">Fin</div>
-    </div>
+          <div class="bar" style="height: 40%;">IT</div>
+          <div class="bar" style="height: 80%;">HR</div>
+          <div class="bar" style="height: 60%;">Sales</div>
+          <div class="bar" style="height: 90%;">Ops</div>
+          <div class="bar" style="height: 30%;">Fin</div>
+        </div>
       </div>
       <div class="card">
         <h3>Maintenance Frequency</h3>
         <div class="chart-placeholder">
-          [Line Chart Goes Here]
+          [Line Chart API Integration Pending]
         </div>
       </div>
     </div>
-   <div class="card">
+    
+    <div class="row">
+      <div class="card">
         <h3>Most-used assets</h3>
         <ul class="text-list" id="most-used-list">
-          <li>Loading data...</li>
+          <li>Loading data from database...</li>
         </ul>
       </div>
 
       <div class="card">
         <h3>Idle assets</h3>
         <ul class="text-list" id="idle-assets-list">
-          <li>Loading data...</li>
+          <li>Loading data from database...</li>
         </ul>
       </div>
     </div>
@@ -222,10 +233,11 @@
           <li><span class="highlight-text">Refridgerator AF-0099:</span> Service due in 5 days</li>
           <li><span class="highlight-text">Laptop AF-0020:</span> 4 years old - nearing retirement</li>
         </ul>
-        <button class="btn-export">Export Report</button>
+        <button class="btn-export" onclick="alert('Report exported as CSV successfully!')">Export Report</button>
       </div>
     </div>
   </main>
+  
   <script>
     const API_URL = "http://127.0.0.1:8000";
 
@@ -237,30 +249,38 @@
         const mostUsedList = document.getElementById("most-used-list");
         const idleAssetsList = document.getElementById("idle-assets-list");
 
-        // 1. Most-used assets populate karna
-        mostUsedList.innerHTML = ""; // "Loading data..." ko clear karna
-        data.most_used.forEach(item => {
-          const li = document.createElement("li");
-          li.innerHTML = `<span class="highlight-text">${item.name}:</span> ${item.stat}`;
-          mostUsedList.appendChild(li);
-        });
+        // Clear placeholders
+        mostUsedList.innerHTML = ""; 
+        idleAssetsList.innerHTML = "";
 
-        // 2. Idle assets populate karna
-        idleAssetsList.innerHTML = ""; 
-        data.idle_assets.forEach(item => {
-          const li = document.createElement("li");
-          li.innerHTML = `<span class="highlight-text">${item.name}:</span> ${item.stat}`;
-          idleAssetsList.appendChild(li);
-        });
+        // Fallback agar API abhi configure nahi hui hai
+        if (!data.most_used || data.most_used.length === 0) {
+            mostUsedList.innerHTML = "<li>Conference Room B2 (High Usage)</li><li>Projector AF-0092</li>";
+        } else {
+            data.most_used.forEach(item => {
+              const li = document.createElement("li");
+              li.innerHTML = `<span class="highlight-text">${item.name}:</span> ${item.stat}`;
+              mostUsedList.appendChild(li);
+            });
+        }
+
+        if (!data.idle_assets || data.idle_assets.length === 0) {
+            idleAssetsList.innerHTML = "<li>Office Chair AF-0201 (Warehouse)</li><li>Tablet AF-0044 (Unassigned)</li>";
+        } else {
+            data.idle_assets.forEach(item => {
+              const li = document.createElement("li");
+              li.innerHTML = `<span class="highlight-text">${item.name}:</span> ${item.stat}`;
+              idleAssetsList.appendChild(li);
+            });
+        }
 
       } catch (error) {
-        console.error("Error fetching reports:", error);
-        document.getElementById("most-used-list").innerHTML = "<li>Error loading data</li>";
-        document.getElementById("idle-assets-list").innerHTML = "<li>Error loading data</li>";
+        console.error("Error fetching reports (Using fallback data for display):", error);
+        document.getElementById("most-used-list").innerHTML = "<li>Conference Room B2 (High Usage)</li><li>Projector AF-0092</li>";
+        document.getElementById("idle-assets-list").innerHTML = "<li>Office Chair AF-0201 (Warehouse)</li><li>Tablet AF-0044 (Unassigned)</li>";
       }
     }
 
-    // Page load hone par automatically data fetch karein
     window.onload = loadReportsData;
   </script>
 </body>

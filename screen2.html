@@ -187,6 +187,46 @@
     .activity-list li:last-child {
       border-bottom: none;
     }
+    .btn.active-tab {
+      background-color: #0f172a;
+      color: #ffffff;
+      border-color: #0f172a;
+    }
+    
+    .category-section {
+      background-color: #ffffff;
+      border: 1px solid #cbd5e1;
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 30px;
+      box-shadow: 0 2px 4px rgba(15, 23, 42, 0.05);
+      display: none; 
+    }
+
+    .category-section h3 {
+      margin-bottom: 16px;
+      color: #0f172a;
+      border-bottom: 1px solid #e2e8f0;
+      padding-bottom: 8px;
+    }
+
+    .simple-form input, .simple-form select {
+      padding: 8px 12px;
+      margin-right: 10px;
+      margin-bottom: 10px;
+      border: 1px solid #cbd5e1;
+      border-radius: 4px;
+    }
+    
+    .simple-form button {
+      padding: 8px 16px;
+      background-color: #38bdf8;
+      border: none;
+      border-radius: 4px;
+      color: #0f172a;
+      font-weight: 600;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
@@ -195,8 +235,6 @@
     <div class="sidebar-header">
       AssetFlow
     </div>
-    <ul class="nav-links">
-    <ul class="nav-links">
      <ul class="nav-links">
       <li><a href="screen2.html">Dashboard</a></li>
       <li><a href="screen 3.html">Organization setup</a></li>
@@ -244,43 +282,142 @@
       ⚠ 3 assets overdue for return - flagged for follow-up
     </div>
 
-    <div class="action-buttons">
-      <button class="btn btn-primary">+ Register asset</button>
-      <button class="btn">Book resource</button>
-      <button class="btn">Process requests</button>
+  <div class="action-buttons">
+      <button class="btn" id="btn-register" onclick="toggleCategory('register')">+ Register asset</button>
+      <button class="btn" id="btn-book" onclick="toggleCategory('book')">Book resource</button>
+      <button class="btn" id="btn-requests" onclick="toggleCategory('requests')">Raise request</button>
     </div>
 
-    <div class="activity-section">
-      <h3>Recent Activity</h3>
-      <ul class="activity-list">
-        <li>Laptop AF-0114 - allocated to Priya Shah - IT dept</li>
-        <li>Room 312 - booking confirmed - 2:00 to 3:00 PM</li>
-        <li>Projector AF-0092 - maintenance resolved</li>
-      </ul>
+    <!-- Hidden Forms (JavaScript inhe dikhayega) -->
+    <div id="section-register" class="category-section">
+      <h3>Register a New Asset</h3>
+      <div class="simple-form">
+        <input type="text" id="asset-name" placeholder="Asset Name (e.g. Dell Monitor)">
+        <input type="text" id="asset-serial" placeholder="Serial Number">
+        <select id="asset-dept">
+          <option value="">Select Department</option>
+          <option value="IT">IT</option>
+          <option value="HR">HR</option>
+        </select>
+        <button onclick="registerNewAsset()">Save Asset</button>
+      </div>
+    </div>
+
+    <div id="section-book" class="category-section">
+      <h3>Book a Resource</h3>
+      <div class="simple-form">
+        <select>
+          <option>Select Resource</option>
+          <option>Meeting Room 3A</option>
+          <option>Projector</option>
+        </select>
+        <input type="date">
+        <input type="time">
+        <button>Confirm Booking</button>
+      </div>
+    </div>
+
+    <div id="section-requests" class="category-section">
+      <h3>Raise a New Request</h3>
+      <div class="simple-form">
+        <select>
+          <option>Request Type</option>
+          <option>Maintenance</option>
+          <option>Transfer Asset</option>
+          <option>Report Missing</option>
+        </select>
+        <input type="text" placeholder="Describe the issue..." style="width: 250px;">
+        <button>Submit Request</button>
+      </div>
     </div>
 
   </main>
 <script>
     const API_URL = "http://127.0.0.1:8000";
 
+    // 1. Tab Change Karne Ka Function (Yeh form dikhayega/chupayega)
+    function toggleCategory(categoryName) {
+      document.getElementById('section-register').style.display = 'none';
+      document.getElementById('section-book').style.display = 'none';
+      document.getElementById('section-requests').style.display = 'none';
+      document.getElementById('btn-register').classList.remove('active-tab');
+      document.getElementById('btn-book').classList.remove('active-tab');
+      document.getElementById('btn-requests').classList.remove('active-tab');
+      
+      if (categoryName === 'register') {
+        document.getElementById('section-register').style.display = 'block';
+        document.getElementById('btn-register').classList.add('active-tab');
+      } 
+      else if (categoryName === 'book') {
+        document.getElementById('section-book').style.display = 'block';
+        document.getElementById('btn-book').classList.add('active-tab');
+      } 
+      else if (categoryName === 'requests') {
+        document.getElementById('section-requests').style.display = 'block';
+        document.getElementById('btn-requests').classList.add('active-tab');
+      }
+    }
+
+    // 2. Database Mein Asset Save Karne Ka Function
+    async function registerNewAsset() {
+      const name = document.getElementById('asset-name').value;
+      const serial = document.getElementById('asset-serial').value;
+      const dept = document.getElementById('asset-dept').value;
+
+      if (!name || !serial || !dept) {
+        alert("Please fill all fields!");
+        return;
+      }
+
+      const assetData = {
+        name: name,
+        serial_number: serial,
+        department: dept
+      };
+
+      try {
+        const response = await fetch(`${API_URL}/api/assets`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(assetData)
+        });
+
+        if (response.ok) {
+          alert("Asset Added to Database Successfully!");
+          // Input fields ko khali karna
+          document.getElementById('asset-name').value = '';
+          document.getElementById('asset-serial').value = '';
+          document.getElementById('asset-dept').value = '';
+          
+          // Dashboard numbers wapas update karna
+          loadDashboardStats();
+        } else {
+          alert("Error adding asset. (Make sure serial number is unique)");
+        }
+      } catch (error) {
+        console.error("Error:", error);
+        alert("Backend se connect nahi ho paya!");
+      }
+    }
+
+    // 3. Dashboard Stats Database Se Lane Ka Function
     async function loadDashboardStats() {
       try {
         const response = await fetch(`${API_URL}/api/dashboard`);
         const data = await response.json();
 
-        // Backend se aaye dynamic data se HTML ke numbers update karna
-        document.getElementById('val-available').innerText = data.available;
-        document.getElementById('val-allocated').innerText = data.allocated;
-        document.getElementById('val-overdue').innerText = data.overdue;
-        document.getElementById('val-bookings').innerText = data.active_bookings;
-        document.getElementById('val-transfers').innerText = data.pending_transfers;
-        document.getElementById('val-returns').innerText = data.upcoming_returns;
+        if(document.getElementById('val-available')) {
+            document.getElementById('val-available').innerText = data.available;
+        }
+        if(document.getElementById('val-allocated')) {
+            document.getElementById('val-allocated').innerText = data.allocated;
+        }
       } catch (error) {
-        console.error("Dashboard data load hone me error:", error);
+        console.error("Dashboard error:", error);
       }
     }
 
-    // Page load hote hi data fetch karna
+    // Page start hote hi stats fetch karna
     window.onload = loadDashboardStats;
   </script>
 </body>

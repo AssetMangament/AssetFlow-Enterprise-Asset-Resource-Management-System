@@ -111,7 +111,7 @@ def get_tickets(db: Session = Depends(get_db)):
 @app.post("/api/maintenance/tickets", response_model=schemas.TicketResponse)
 def create_ticket(ticket: schemas.TicketCreate, db: Session = Depends(get_db)):
     new_ticket = models.MaintenanceTicket(
-        asset_id=ticket.asset_id,
+        asset_id=ticket.asset_tag,
         description=ticket.description,
         status=ticket.status
     )
@@ -151,3 +151,82 @@ def create_department(dept: schemas.DepartmentCreate, db: Session = Depends(get_
     db.commit()
     db.refresh(new_dept)
     return new_dept
+@app.post("/api/assets")
+def register_asset(asset: schemas.AssetCreate, db: Session = Depends(get_db)):
+    # Database me naya asset create karna (Default status: Available)
+    new_asset = models.Asset(
+        name=asset.name, 
+        asset_tag=asset.serial_number, # models.py me humne asset_tag banaya tha
+        category=asset.department,     # models.py me humne category banaya tha
+        status="Available"
+    )
+    db.add(new_asset)
+    db.commit()
+    db.refresh(new_asset)
+    return {"message": "Asset registered successfully!", "asset": new_asset}
+
+@app.get("/api/dashboard")
+def get_dashboard_stats(db: Session = Depends(get_db)):
+    # Database se real-time count nikalna
+    available_count = db.query(models.Asset).filter(models.Asset.status == "Available").count()
+    allocated_count = db.query(models.Asset).filter(models.Asset.status == "Allocated").count()
+    
+    return {
+        "available": available_count,
+        "allocated": allocated_count,
+        "overdue": 0,
+        "active_bookings": 0,
+        "pending_transfers": 0,
+        "upcoming_returns": 0
+    }
+@app.get("/api/assets")
+def get_all_assets(db: Session = Depends(get_db)):
+    # Database se saare assets nikalna
+    assets = db.query(models.Asset).all()
+    return assets
+@app.post("/api/transfers")
+def request_transfer(transfer: schemas.TransferCreate, db: Session = Depends(get_db)):
+    # 1. Database mein asset ko uske tag (jaise AF-0114) se dhundho
+    db_asset = db.query(models.Asset).filter(models.Asset.asset_tag == transfer.asset_tag).first()
+    
+    # 2. Agar asset na mile toh error do
+    if not db_asset:
+        raise HTTPException(status_code=404, detail="Asset database mein nahi mila")
+    
+    # 3. Asset ka status update karo
+    db_asset.status = "Allocated"
+    # (Agar models.py mein 'assigned_to' column hai, toh: db_asset.assigned_to = transfer.to_employee)
+    
+    # 4. Changes save karo
+    db.commit()
+    
+    return {"message": f"Transfer successful! Asset allocated to {transfer.to_employee}"}
+@app.post("/api/maintenance")
+def create_maintenance_ticket(ticket: schemas.TicketCreate, db: Session = Depends(get_db)):
+    # Yahan sirf ticket.asset_tag use karna hai
+    db_asset = db.query(models.Asset).filter(models.Asset.asset_tag == ticket.asset_tag).first()
+    
+    if not db_asset:
+        raise HTTPException(status_code=404, detail="Asset database mein nahi mila")
+    
+    new_ticket = models.MaintenanceTicket(
+        asset_tag=ticket.asset_tag, # Yahan confirm kiya
+        description=ticket.description,
+        status="Pending"
+    )
+    db.add(new_ticket)
+    db_asset.status = "Maintenance"
+    db.commit()
+    return {"message": "Maintenance ticket created"}
+
+@app.get("/api/maintenance/tickets")
+def get_maintenance_tickets(db: Session = Depends(get_db)):
+    tickets = db.query(models.MaintenanceTicket).all()
+    result = []
+    for t in tickets:
+        result.append({
+            "asset_id": t.asset_tag, # Frontend yahi field dhund raha hai
+            "description": t.description,
+            "status": t.status
+        })
+    return result

@@ -18,6 +18,8 @@
       display: flex;
       min-height: 100vh;
     }
+
+    /* Sidebar Layout */
     .sidebar {
       width: 260px;
       background-color: #0f172a; 
@@ -58,7 +60,6 @@
       color: #ffffff;
     }
 
-    /* Active Menu Item */
     .nav-links a.active {
       background-color: #38bdf8; 
       color: #0f172a;
@@ -79,7 +80,7 @@
       margin-bottom: 24px;
     }
 
-    /* --- Content Cards --- */
+    /* Content Cards */
     .card {
       background-color: #ffffff;
       border: 1px solid #cbd5e1;
@@ -89,7 +90,7 @@
       margin-bottom: 24px;
     }
 
-    /* --- Audit Progress Header --- */
+    /* Audit Progress Header */
     .audit-header {
       display: flex;
       justify-content: space-between;
@@ -109,7 +110,6 @@
       font-weight: 500;
     }
 
-    /* Simple Progress Bar using CSS */
     .progress-track {
       width: 100%;
       height: 8px;
@@ -151,6 +151,7 @@
     .asset-name {
       font-weight: 600;
     }
+    
     /*Status Badges*/
     .status-group {
       display: flex;
@@ -166,7 +167,7 @@
       border: 1px solid transparent;
       transition: all 0.2s ease;
     }
-    /* Default State */
+    
     .badge-outline {
       background-color: transparent;
       border-color: #cbd5e1;
@@ -177,7 +178,6 @@
       background-color: #f8fafc;
     }
 
-    /* Selected States */
     .badge-verified {
       background-color: #d1fae5;
       color: #065f46;
@@ -193,6 +193,7 @@
       color: #991b1b;
       border-color: #ef4444;
     }
+    
     /*Warning Alert Box*/
     .alert-box {
       background-color: #fffbeb;
@@ -206,6 +207,7 @@
       display: flex;
       align-items: center;
     }
+    
     /*Action Buttons*/
     .btn {
       padding: 12px 24px;
@@ -225,32 +227,33 @@
 </head>
 <body>
   <aside class="sidebar">
-    <div class="sidebar-header">
-      AssetFlow
-    </div>
+    <div class="sidebar-header">AssetFlow</div>
     <ul class="nav-links">
-      <ul class="nav-links">
       <li><a href="screen2.html">Dashboard</a></li>
       <li><a href="screen 3.html">Organization setup</a></li>
       <li><a href="screen 4.html">Assets</a></li>
       <li><a href="screen 5.html">Allocation & Transfer</a></li>
       <li><a href="screen 6.html">Resource Booking</a></li>
       <li><a href="screen7.html">Maintenance</a></li>
-      <li><a href="screen8.html">Audit</a></li>
+      <li><a href="screen8.html" class="active">Audit</a></li>
       <li><a href="screen9.html">Reports</a></li>
-      <li><a href="screen 10.html">Notifications</a></li> </ul>
+      <li><a href="screen 10.html">Notifications</a></li>
+    </ul>
   </aside>
+
   <main class="main-content">  
     <h1 class="section-title">Asset Audit</h1>
+    
     <div class="card">
       <div class="audit-header">
         <span class="audit-title">Q2 Audit: Engineering Dept</span>
-        <span class="audit-progress">12 / 16 Assessed</span>
+        <span class="audit-progress" id="progress-text">12 / 16 Assessed</span>
       </div>
       <div class="progress-track">
-        <div class="progress-fill"></div>
+        <div class="progress-fill" id="progress-bar" style="width: 75%;"></div>
       </div>
     </div>
+
     <div class="card">
       <table class="audit-table">
         <thead>
@@ -266,9 +269,9 @@
             <td>Desk 312</td>
             <td>
               <div class="status-group">
-                <span class="badge badge-verified">Verified</span>
-                <span class="badge badge-outline">Missing</span>
-                <span class="badge badge-outline">Damaged</span>
+                <span class="badge badge-verified" onclick="setStatus(this, 'verified')">Verified</span>
+                <span class="badge badge-outline" onclick="setStatus(this, 'missing')">Missing</span>
+                <span class="badge badge-outline" onclick="setStatus(this, 'damaged')">Damaged</span>
               </div>
             </td>
           </tr>       
@@ -277,9 +280,9 @@
             <td>Desk 314</td>
             <td>
               <div class="status-group">
-                <span class="badge badge-outline">Verified</span>
-                <span class="badge badge-missing">Missing</span>
-                <span class="badge badge-outline">Damaged</span>
+                <span class="badge badge-outline" onclick="setStatus(this, 'verified')">Verified</span>
+                <span class="badge badge-missing" onclick="setStatus(this, 'missing')">Missing</span>
+                <span class="badge badge-outline" onclick="setStatus(this, 'damaged')">Damaged</span>
               </div>
             </td>
           </tr>
@@ -288,19 +291,59 @@
             <td>Desk 315</td>
             <td>
               <div class="status-group">
-                <span class="badge badge-outline">Verified</span>
-                <span class="badge badge-outline">Missing</span>
-                <span class="badge badge-damaged">Damaged</span>
+                <span class="badge badge-outline" onclick="setStatus(this, 'verified')">Verified</span>
+                <span class="badge badge-outline" onclick="setStatus(this, 'missing')">Missing</span>
+                <span class="badge badge-damaged" onclick="setStatus(this, 'damaged')">Damaged</span>
               </div>
             </td>
           </tr>
         </tbody>
       </table>
     </div>
-    <div class="alert-box">
+
+    <div class="alert-box" id="audit-alert">
       ⚠ 2 assets flagged — Discrepancy report generated automatically
     </div>
-    <button class="btn">Close audit cycle</button>
+    <button class="btn" onclick="submitAudit()">Close audit cycle</button>
   </main>
+
+  <script>
+    // Visual logic for interacting with audit badges
+    function setStatus(clickedBadge, statusType) {
+      const group = clickedBadge.parentElement;
+      const badges = group.querySelectorAll('.badge');
+      
+      // Reset all to outline
+      badges.forEach(b => {
+        b.className = 'badge badge-outline';
+      });
+
+      // Apply specific class based on click
+      if (statusType === 'verified') clickedBadge.className = 'badge badge-verified';
+      if (statusType === 'missing') clickedBadge.className = 'badge badge-missing';
+      if (statusType === 'damaged') clickedBadge.className = 'badge badge-damaged';
+      
+      updateDiscrepancyAlert();
+    }
+
+    function updateDiscrepancyAlert() {
+      const missingCount = document.querySelectorAll('.badge-missing').length;
+      const damagedCount = document.querySelectorAll('.badge-damaged').length;
+      const totalFlagged = missingCount + damagedCount;
+      
+      const alertBox = document.getElementById('audit-alert');
+      if (totalFlagged > 0) {
+        alertBox.style.display = 'flex';
+        alertBox.innerText = `⚠ ${totalFlagged} assets flagged — Discrepancy report will be generated.`;
+      } else {
+        alertBox.style.display = 'none';
+      }
+    }
+
+    function submitAudit() {
+      alert("Audit cycle closed successfully! Discrepancy reports saved to database.");
+      window.location.href = "screen2.html";
+    }
+  </script>
 </body>
 </html>
