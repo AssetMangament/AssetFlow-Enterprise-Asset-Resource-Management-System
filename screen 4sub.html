@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AssetFlow - Master Directory</title>
+  <style>
+    /* Global Reset & Typography */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+
+    body {
+      background-color: #f1f5f9; /* System off-white canvas background */
+      color: #1e293b;
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* Sidebar Layout - Persistent Brand Header */
+    .sidebar {
+      width: 260px;
+      background-color: #0f172a; /* Brand deep navy */
+      color: #ffffff;
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+    }
+
+    .sidebar-header {
+      padding: 24px;
+      font-size: 1.25rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      border-bottom: 1px solid #1e293b;
+    }
+
+    .nav-links {
+      list-style: none;
+      padding: 16px 8px;
+    }
+
+    .nav-links li {
+      margin-bottom: 4px;
+    }
+
+    .nav-links a {
+      display: block;
+      padding: 12px 16px;
+      color: #94a3b8;
+      text-decoration: none;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      font-weight: 500;
+      transition: all 0.2s ease;
+    }
+
+    .nav-links a:hover {
+      background-color: #1e293b;
+      color: #ffffff;
+    }
+
+    /* Active Navigation Module Highlight */
+    .nav-links a.active {
+      background-color: #1e293b;
+      color: #38bdf8;            /* Active bright blue accent */
+      border: 1px solid #38bdf8; /* Box wireframe outline */
+      font-weight: 600;
+    }
+
+    /* Main Workspace Canvas Window */
+    .main-content {
+      flex-grow: 1;
+      padding: 40px;
+      overflow-y: auto;
+      background-color: #ffffff;
+    }
+
+    .section-meta {
+      font-size: 0.9rem;
+      color: #64748b;
+      margin-bottom: 16px;
+    }
+
+    /* Subhead Nav Modules Configuration Row */
+    .view-selector-tabs {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 24px;
+      border-bottom: 1px solid #e2e8f0;
+      padding-bottom: 16px;
+    }
+
+    .view-btn {
+      padding: 10px 20px;
+      background-color: #f8fafc;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      color: #475569;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .view-btn:hover {
+      background-color: #f1f5f9;
+      border-color: #94a3b8;
+    }
+
+    /* Active view state color style */
+    .view-btn.active {
+      background-color: #0f172a;
+      border-color: #0f172a;
+      color: #ffffff;
+    }
+
+    /* Top Controls Layer Panel Row */
+    .top-control-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+      gap: 20px;
+    }
+
+    .search-wrapper {
+      flex-grow: 1;
+      max-width: 480px;
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 10px 16px;
+      background-color: #f8fafc;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      color: #0f172a;
+      font-size: 0.95rem;
+      outline: none;
+    }
+
+    .search-input:focus {
+      background-color: #ffffff;
+      border-color: #38bdf8;
+    }
+
+    /* Global Add Elements Primary CTA Button */
+    .btn-action-add {
+      padding: 10px 24px;
+      background-color: #0f172a;
+      border: 1px solid #0f172a;
+      border-radius: 8px;
+      color: #ffffff;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    /* Modular Interface Canvas Sections */
+    .interface-panel {
+      display: none; /* Controlled dynamically via active markers */
+    }
+
+    .interface-panel.active-panel {
+      display: block;
+    }
+
+    /* Tabular Data Grid Configurations */
+    .table-container {
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 6px -1px rgba(15, 23, 42, 0.02);
+    }
+
+    .directory-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.95rem;
+    }
+
+    .directory-table th {
+      background-color: #f8fafc;
+      color: #0f172a;
+      font-weight: 600;
+      padding: 16px 20px;
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    .directory-table td {
+      padding: 16px 20px;
+      border-bottom: 1px solid #e2e8f0;
+      color: #475569;
+    }
+
+    .directory-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    /* Standard Status Pill Elements */
+    .pill {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+
+    .pill.blue { background-color: #e0f2fe; color: #0369a1; }
+    .pill.green { background-color: #dcfce7; color: #166534; }
+    .pill.amber { background-color: #fef3c7; color: #92400e; }
+    .pill.red { background-color: #fee2e2; color: #991b1b; }
+
+  </style>
+</head>
+<body>
+
+  <!-- Left Sidebar Global Navigation Frame -->
+  <aside class="sidebar">
+    <div class="sidebar-header">AssetFlow</div>
+    <ul class="nav-links">
+      <li><a href="#">Dashboard</a></li>
+      <li><a href="#">Organization setup</a></li>
+      <li><a href="#" class="active">Assets</a></li>
+      <li><a href="#">Allocation & Transfer</a></li>
+      <li><a href="#">Resource Booking</a></li>
+      <li><a href="#">Maintenance</a></li>
+      <li><a href="#">Audit</a></li>
+      <li><a href="#">Reports</a></li>
+      <li><a href="#">Notifications</a></li>
+    </ul>
+  </aside>
+
+  <!-- Right Master Primary Module Layout Content Window -->
+  <main class="main-content">
+    <div class="section-meta">Screen 4 Registration Modules Directory Canvas</div>
+
+    <!-- Subhead Sub-Navigation Row Tabs Segment -->
+    <div class="view-selector-tabs">
+      <button class="view-btn active" onclick="switchView('assets-panel', this)">Assets Interface</button>
+      <button class="view-btn" onclick="switchView('categories-panel', this)">Categories Interface</button>
+      <button class="view-btn" onclick="switchView('status-panel', this)">Status Interface</button>
+      <button class="view-btn" onclick="switchView('departments-panel', this)">Departments Interface</button>
+    </div>
+
+    <!-- =========================================================
+         1. ASSETS MODULAR VIEW PANEL
+         ========================================================= -->
+    <div id="assets-panel" class="interface-panel active-panel">
+      <div class="top-control-bar">
+        <div class="search-wrapper">
+          <input type="text" class="search-input" placeholder="Search by asset tag, serial, or name...">
+        </div>
+        <button class="btn-action-add">+ Register Asset</button>
+      </div>
+      <div class="table-container">
+        <table class="directory-table">
+          <thead>
+            <tr>
+              <th>Tag</th>
+              <th>Name</th>
+              <th>Category</th>
+              <th>Status</th>
+              <th>Location</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>AF-0012</strong></td>
+              <td>Dell Laptop</td>
+              <td>Electronics</td>
+              <td><span class="pill red">Allocated</span></td>
+              <td>Bengaluru</td>
+            </tr>
+            <tr>
+              <td><strong>AF-0062</strong></td>
+              <td>Projector</td>
+              <td>Electronics</td>
+              <td><span class="pill amber">Maintenance</span></td>
+              <td>HQ Floor 2</td>
+            </tr>
+            <tr>
+              <td><strong>AF-0201</strong></td>
+              <td>Office Chair</td>
+              <td>Furniture</td>
+              <td><span class="pill green">Available</span></td>
+              <td>Warehouse</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- =========================================================
+         2. CATEGORIES MODULAR VIEW PANEL
+         ========================================================= -->
+    <div id="categories-panel" class="interface-panel">
+      <div class="top-control-bar">
+        <div class="search-wrapper">
+          <input type="text" class="search-input" placeholder="Search system category fields...">
+        </div>
+        <button class="btn-action-add">+ Create Category</button>
+      </div>
+      <div class="table-container">
+        <table class="directory-table">
+          <thead>
+            <tr>
+              <th>Category Code</th>
+              <th>Category Name</th>
+              <th>Total Item Count</th>
+              <th>Depreciation Rate</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>CAT-ELEC</strong></td>
+              <td>Electronics</td>
+              <td>142 Assets</td>
+              <td>20% / yr</td>
+            </tr>
+            <tr>
+              <td><strong>CAT-FURN</strong></td>
+              <td>Furniture</td>
+              <td>68 Assets</td>
+              <td>10% / yr</td>
+            </tr>
+            <tr>
+              <td><strong>CAT-VEHI</strong></td>
+              <td>Vehicles</td>
+              <td>12 Assets</td>
+              <td>15% / yr</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- =========================================================
+         3. STATUS MODULAR VIEW PANEL
+         ========================================================= -->
+    <div id="status-panel" class="interface-panel">
+      <div class="top-control-bar">
+        <div class="search-wrapper">
+          <input type="text" class="search-input" placeholder="Search system workflow status fields...">
+        </div>
+        <button class="btn-action-add">+ Add Custom Status</button>
+      </div>
+      <div class="table-container">
+        <table class="directory-table">
+          <thead>
+            <tr>
+              <th>Status Identifier</th>
+              <th>Visual Tag Color</th>
+              <th>System Core Rule Mapping</th>
+              <th>Operational Status Descriptions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Available</strong></td>
+              <td><span class="pill green">Green</span></td>
+              <td>Deployable asset flag</td>
+              <td>Asset is clean, verified, and in stock.</td>
+            </tr>
+            <tr>
+              <td><strong>Allocated</strong></td>
+              <td><span class="pill red">Red</span></td>
+              <td>Double-allocation protected</td>
+              <td>Currently assigned out to an active employee.</td>
+            </tr>
+            <tr>
+              <td><strong>Maintenance</strong></td>
+              <td><span class="pill amber">Amber</span></td>
+              <td>System deployment lockout</td>
+              <td>Item is undergoing regular repair cycles.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- =========================================================
+         4. DEPARTMENTS MODULAR VIEW PANEL
+         ========================================================= -->
+    <div id="departments-panel" class="interface-panel">
+      <div class="top-control-bar">
+        <div class="search-wrapper">
+          <input type="text" class="search-input" placeholder="Search specific organization departments...">
+        </div>
+        <button class="btn-action-add">+ Add Department</button>
+      </div>
+      <div class="table-container">
+        <table class="directory-table">
+          <thead>
+            <tr>
+              <th>Department Code</th>
+              <th>Department Name</th>
+              <th>Appointed Head</th>
+              <th>Active Cost Center</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>DEPT-ENG</strong></td>
+              <td>Engineering</td>
+              <td>Aditi Rao</td>
+              <td>CC-401-ENG</td>
+            </tr>
+            <tr>
+              <td><strong>DEPT-FAC</strong></td>
+              <td>Facilities</td>
+              <td>Rohan Mehta</td>
+              <td>CC-102-FAC</td>
+            </tr>
+            <tr>
+              <td><strong>DEPT-OPS</strong></td>
+              <td>Field Ops (East)</td>
+              <td>Sana Iqbal</td>
+              <td>CC-909-FOE</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Navigation Toggle Logic Script -->
+  <script>
+    function switchView(panelId, element) {
+      // Clear current visible panels
+      const panels = document.querySelectorAll('.interface-panel');
+      panels.forEach(panel => panel.classList.remove('active-panel'));
+      
+      // Clear active style indicator button states
+      const tabButtons = document.querySelectorAll('.view-btn');
+      tabButtons.forEach(btn => btn.classList.remove('active'));
+
+      // Make selected configuration interface panel element visible
+      document.getElementById(panelId).classList.add('active-panel');
+      element.classList.add('active');
+    }
+  </script>
+</body>
+</html>
