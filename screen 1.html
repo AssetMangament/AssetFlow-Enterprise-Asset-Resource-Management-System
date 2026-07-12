@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AssetFlow - Login</title>
+  <style>
+    /* Global Reset & Typography */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+
+    body {
+      background-color: #f1f5f9; /* Soft, clean off-white background */
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      color: #1e293b;
+    }
+
+    /* Card Layout */
+    .login-card {
+      background-color: #ffffff;
+      width: 400px;
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+      overflow: hidden;
+      border: 1px solid #e2e8f0;
+    }
+
+    /* Header Bar */
+    .card-header {
+      background-color: #0f172a; /* Professional Deep Navy Header */
+      color: #ffffff;
+      text-align: center;
+      padding: 16px;
+      font-weight: 700;
+      font-size: 1.15rem;
+      letter-spacing: 0.5px;
+    }
+
+    /* Body Container */
+    .card-body {
+      padding: 24px 32px 32px 32px;
+    }
+
+    /* Circular Logo Avatar */
+    .avatar-container {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 24px;
+    }
+
+    .avatar {
+      width: 64px;
+      height: 64px;
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: #38bdf8; /* Vibrant light blue initials */
+      font-weight: 600;
+      font-size: 1.1rem;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Form Fields */
+    .form-group {
+      margin-bottom: 20px;
+      position: relative;
+    }
+
+    label {
+      display: block;
+      font-size: 0.9rem;
+      color: #475569; /* Slate grey labels */
+      margin-bottom: 8px;
+      font-weight: 500;
+    }
+
+    input[type="email"],
+    input[type="password"] {
+      width: 100%;
+      padding: 12px 16px;
+      background-color: #f8fafc;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      color: #0f172a;
+      font-size: 0.95rem;
+      outline: none;
+      transition: all 0.2s;
+    }
+
+    input::placeholder {
+      color: #94a3b8;
+    }
+
+    input:focus {
+      background-color: #ffffff;
+      border-color: #0ea5e9; /* Light blue accent focus border */
+      box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.15);
+    }
+
+    /* Forgot Password Link */
+    .forgot-link {
+      display: block;
+      text-align: right;
+      color: #0284c7; /* Corporate blue link */
+      font-size: 0.85rem;
+      text-decoration: none;
+      margin-top: -12px;
+      margin-bottom: 24px;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+
+    .forgot-link:hover {
+      color: #0369a1;
+      text-decoration: underline;
+    }
+
+    /* Separator Line */
+    .divider {
+      border: 0;
+      height: 1px;
+      background-color: #e2e8f0;
+      margin-bottom: 24px;
+    }
+
+    /* Bottom Info Section */
+    .info-box {
+      background-color: #f0fdf4; /* Light mint/emerald background */
+      border: 1px solid #bbf7d0;
+      border-radius: 8px;
+      padding: 14px 16px;
+      margin-top: 8px;
+      margin-bottom: 24px;
+    }
+
+    .info-box p {
+      font-size: 0.85rem;
+      color: #166534; /* Deep emerald text */
+      line-height: 1.5;
+    }
+
+    /* Create Account Button */
+    .btn-submit {
+      width: 100%;
+      padding: 12px;
+      background-color: #0f172a; /* Matching deep navy button */
+      border: 1px solid #0f172a;
+      border-radius: 8px;
+      color: #ffffff;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .btn-submit:hover {
+      background-color: #1e293b;
+      border-color: #1e293b;
+      transform: translateY(-1px);
+    }
+    
+    .btn-submit:active {
+      transform: translateY(0);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="login-card">
+    <div class="card-header">
+      AssetFlow – login
+    </div>
+    
+    <div class="card-body">
+      <!-- Circular Avatar -->
+      <div class="avatar-container">
+        <div class="avatar">AF</div>
+      </div>
+
+      <!-- Login Form -->
+      <form onsubmit="event.preventDefault();">
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input type="email" id="email" placeholder="name@company.com" required>
+        </div>
+
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input type="password" id="password" value="**********" required>
+        </div>
+
+        <a href="#" class="forgot-link">Forgot password</a>
+
+        <hr class="divider">
+
+        <!-- Info/Sign-up Box -->
+        <div class="form-group">
+          <label>New here?</label>
+          <div class="info-box">
+            <p>Sign up creates an employee account<br>admin roles assigned later</p>
+          </div>
+        </div>
+
+        <button type="submit" class="btn-submit">Create Account</button>
+      </form>
+    </div>
+  </div>
+
+</body>
+</html>
