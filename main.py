@@ -230,3 +230,70 @@ def get_maintenance_tickets(db: Session = Depends(get_db)):
             "status": t.status
         })
     return result
+# --- ALLOCATION API (With Double-Allocation Block) ---
+@app.post("/api/allocations")
+def allocate_asset(alloc: schemas.AllocationCreate, db: Session = Depends(get_db)):
+    # 1. Check if asset exists and is Available
+    asset = db.query(models.Asset).filter(models.Asset.name == alloc.asset_name).first()
+    
+    if not asset:
+        raise HTTPException(status_code=404, detail="Asset not found")
+    
+    if asset.status == "Allocated":
+        # DOUBLE ALLOCATION BLOCK LOGIC
+        raise HTTPException(status_code=400, detail=f"Blocked: Already allocated. Submit a transfer request.")
+    
+    # 2. Allocate and update asset status
+    new_alloc = models.Allocation(asset_name=alloc.asset_name, assigned_to=alloc.assigned_to)
+    asset.status = "Allocated"  # Update original asset
+    
+    # 3. Log Activity
+    log_entry = models.ActivityLog(description=f"Asset {asset.name} allocated to {alloc.assigned_to}")
+    
+    db.add(new_alloc)
+    db.add(log_entry)
+    db.commit()
+    return {"status": "success", "message": "Asset allocated successfully"}
+
+# --- BOOKING API (With Time Overlap Validation) ---
+@app.post("/api/bookings")
+def book_resource(booking: schemas.BookingCreate, db: Session = Depends(get_db)):
+    # OVERLAP VALIDATION LOGIC
+    overlapping = db.query(models.Booking).filter(
+        models.Booking.resource_name == booking.resource_name,
+        models.Booking.start_time < booking.end_time,
+        models.Booking.end_time > booking.start_time
+    ).first()
+
+    if overlapping:
+        raise HTTPException(status_code=400, detail="Conflict: Slot is already booked for this time.")
+
+    new_booking = models.Booking(
+        resource_name=booking.resource_name,
+        start_time=booking.start_time,
+        end_time=booking.end_time,
+        booked_by=booking.booked_by
+    )
+    
+    log_entry = models.ActivityLog(description=f"{booking.resource_name} booked by {booking.booked_by}")
+    
+    db.add(new_booking)
+    db.add(log_entry)
+    db.commit()
+    return {"status": "success", "message": "Resource booked successfully"}
+# --- AUDIT API ---
+@app.post("/api/audit/cycle")
+def create_audit(name: str, db: Session = Depends(get_db)):
+    cycle = models.AuditCycle(name=name)
+    db.add(cycle)
+    db.commit()
+    return {"message": "Audit cycle started"}
+
+@app.post("/api/audit/verify")
+def verify_asset(asset_id: int, status: str, db: Session = Depends(get_db)):
+    # Yahan logic hai ki auditor Verified/Missing/Damaged kya mark kar raha hai
+    asset = db.query(models.Asset).filter(models.Asset.id == asset_id).first()
+    if asset:
+        asset.status = status # Auto-update status
+        db.commit()
+    return {"message": "Asset status updated for audit"}

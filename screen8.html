@@ -345,5 +345,13 @@
       window.location.href = "screen2.html";
     }
   </script>
+  <script>
+  const API_URL = "http://127.0.0.1:8000";
+  
+  async function updateVerification(assetId, status) {
+    await fetch(`${API_URL}/api/audit/verify?asset_id=${assetId}&status=${status}`, { method: 'POST' });
+    alert("Audit updated for asset " + assetId);
+  }
+</script>
 </body>
 </html>

@@ -273,5 +273,52 @@
       alert("Booking request submitted successfully for " + resource + ".\nPending admin approval.");
     });
   </script>
+  <script>
+    const API_URL = "http://127.0.0.1:8000";
+    
+    // Page load hote hi red conflict card ko hide karenge
+    const conflictCard = document.querySelector(".booking-card.conflict");
+    conflictCard.style.display = "none";
+
+    document.querySelector('.btn-book').addEventListener('click', async (e) => {
+      e.preventDefault();
+      const resource = document.getElementById("resource-select").value.split(" - ")[0];
+      
+      // Hackathon demo ke liye ek overlap time bheja hai (9:30 AM to 10:30 AM)
+      // Jabki pehle se 9-10 book dikhaya hai UI mein
+      let startTime = new Date();
+      startTime.setHours(9, 30, 0); 
+      let endTime = new Date();
+      endTime.setHours(10, 30, 0);
+
+      const payload = {
+          resource_name: resource,
+          start_time: startTime.toISOString(),
+          end_time: endTime.toISOString(),
+          booked_by: "Current User" // Dummy user for demo
+      };
+
+      try {
+        const response = await fetch(`${API_URL}/api/bookings`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+        
+        const result = await response.json();
+        
+        if(response.ok) {
+            alert("Success: " + result.message);
+            conflictCard.style.display = "none";
+        } else {
+            // BACKEND SE AAYA OVERLAP VALIDATION ERROR YAHAN DIKHEGA
+            conflictCard.style.display = "block";
+            conflictCard.innerText = "Conflict: " + result.detail;
+        }
+      } catch(error) {
+          alert("Server error");
+      }
+    });
+  </script>
 </body>
 </html>

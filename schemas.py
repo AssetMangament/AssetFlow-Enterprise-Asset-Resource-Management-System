@@ -1,5 +1,15 @@
 from pydantic import BaseModel, EmailStr
+from datetime import datetime
 
+class AllocationCreate(BaseModel):
+    asset_name: str
+    assigned_to: str
+
+class BookingCreate(BaseModel):
+    resource_name: str
+    start_time: datetime
+    end_time: datetime
+    booked_by: str
 # --- User Schemas ---
 class UserCreate(BaseModel):
     name: str
@@ -57,3 +67,14 @@ class TransferCreate(BaseModel):
     asset_tag: str
     to_employee: str
     reason: str
+
+
+class AllocationCreate(BaseModel):
+    asset_name: str
+    assigned_to: str
+
+class BookingCreate(BaseModel):
+    resource_name: str
+    start_time: datetime
+    end_time: datetime
+    booked_by: str

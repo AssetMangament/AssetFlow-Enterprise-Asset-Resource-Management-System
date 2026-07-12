@@ -379,5 +379,46 @@
     // Page load hote hi dropdown bharna
     window.onload = loadAssetsForDropdown;
   </script>
+  <script>
+    const API_URL = "http://127.0.0.1:8000";
+    
+    // Page load hote hi pehle error banner ko hide kar dete hain
+    const errorBanner = document.querySelector(".error-banner");
+    errorBanner.style.display = "none";
+
+    document.querySelector('form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const assetSelect = document.getElementById("asset-select").value;
+      const assetName = assetSelect.split(" - ")[0]; // "AF-0114"
+      const assignTo = document.getElementById("to-employee").value;
+
+      if (!assignTo) {
+          alert("Please select an employee to transfer to.");
+          return;
+      }
+
+      try {
+        const response = await fetch(`${API_URL}/api/allocations`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ asset_name: assetName, assigned_to: assignTo })
+        });
+        
+        const result = await response.json();
+        
+        if(response.ok) {
+            alert("Success: " + result.message);
+            errorBanner.style.display = "none";
+        } else {
+            // BACKEND SE AAYA DOUBLE ALLOCATION BLOCK ERROR YAHAN DIKHEGA
+            errorBanner.style.display = "block";
+            errorBanner.innerHTML = `<div class="error-title">Allocation Blocked</div><div>${result.detail}</div>`;
+        }
+      } catch(error) {
+          alert("Server error");
+      }
+    });
+  </script>
 </body>
 </html>

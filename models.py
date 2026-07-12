@@ -1,7 +1,7 @@
 from sqlalchemy import Column, Integer, String, Boolean, ForeignKey
 from database import Base
+from sqlalchemy import Column, Integer, String, Boolean, Float, DateTime
 from sqlalchemy.orm import relationship
-
 class Department(Base):
     __tablename__ = "departments"
     
@@ -40,3 +40,24 @@ class MaintenanceTicket(Base):
     asset_id = Column(String, index=True)  # Example: AF-0062
     description = Column(String)
     status = Column(String, default="Pending") # Pending, Approved, In Progress, Resolved etc.
+# --- ASSET ALLOCATION MODEL ---
+class Allocation(Base):
+    __tablename__ = "allocations"
+    id = Column(Integer, primary_key=True, index=True)
+    asset_name = Column(String, index=True)
+    assigned_to = Column(String)
+    status = Column(String, default="Active")
+
+# --- RESOURCE BOOKING MODEL ---
+class Booking(Base):
+    __tablename__ = "bookings"
+    id = Column(Integer, primary_key=True, index=True)
+    resource_name = Column(String, index=True)
+    start_time = Column(DateTime)
+    end_time = Column(DateTime)
+    booked_by = Column(String)
+class AuditCycle(Base):
+    __tablename__ = "audit_cycles"
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String) # e.g., "Q2 Audit"
+    status = Column(String, default="Open") # Open, Closed
